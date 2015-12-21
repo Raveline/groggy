@@ -1,13 +1,6 @@
 import libtcodpy as tcod
 import groggy.utils.bus as bus
 from groggy.inputs.input import Inputs
-from groggy.viewport.scape import Crosshair, Fillhair, Selection
-from groggy.utils.tcod_wrapper import Console
-from groggy.utils.geom import Frame
-from groggy.view.show_console import display, print_selection, display_text
-from groggy.view.show_console import display_creatures
-from groggy.ui.state import GameState
-from groggy.ui.component_builder import build_menu
 
 
 class Game(object):
@@ -15,8 +8,10 @@ class Game(object):
     An abstraction to represent the whole game process.
     """
     def __init__(self, title, width, height, fps=60):
-        tcod.console_init_root(width, height, TITLE)
-        self.initialize_consoles(width, height)
+        self.width = width
+        self.height = height
+        tcod.console_init_root(self.width, self.height, title)
+        self.initialize_consoles(self.width, self.height)
 
         self.inputs = Inputs(bus.bus)
         bus.bus.subscribe(self, bus.GAME_EVENT)
@@ -29,7 +24,7 @@ class Game(object):
 
         self.fps = fps
 
-    def initialize_consoles(self, width, height):
+    def initialize_consoles(self):
         """
         Setup the various consoles that will be used most often by the Game
         """
@@ -83,7 +78,7 @@ class Game(object):
                 tick = True
                 counter = 0
             if tick and not self.state.pauses_game:
-                model_tick(self)
+                self.model_tick(self)
             self.display(blink)
             self.state.display(0)
             self.inputs.poll()
