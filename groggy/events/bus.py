@@ -40,17 +40,16 @@ GAME_EVENT = 100          # General game-related event
 WORLD_EVENT = 101         # General event worldwide
 
 
-
 class Bus(object):
     EVENTS_NAMES = {INPUT_EVENT: 'Input event',
                     AREA_SELECT: 'Area select',
                     PLAYER_ACTION: 'Player action',
                     FEEDBACK_EVENT: 'Feedback event',
                     GAME_EVENT: 'Game event',
-                    WORLD_EVENT:'World event',
-                    NEW_STATE:'New state',
+                    WORLD_EVENT: 'World event',
+                    NEW_STATE: 'New state',
                     PREVIOUS_STATE: 'Previous state',
-                    MENU_EVENT: 'Menu event',
+                    MENU_ACTION: 'Menu event',
                     MENU_MODEL_EVENT: 'Menu model event',
                     GAME_EVENT: 'Game event',
                     WORLD_EVENT: 'World event'}
@@ -74,7 +73,7 @@ class Bus(object):
         event = {'type': event_type,
                  'data': event}
         # For MENU EVENT, act in a stacky, LIFO way
-        if event_type == MENU_EVENT:
+        if event_type == MENU_ACTION:
             self.events.get(event_type)[-1].receive(event.get('data'))
         # In any other case, publish for every listener
         else:
@@ -94,7 +93,7 @@ class Bus(object):
         Debugging utility: see who listens to what.
         '''
         representation = []
-        for event_key, event_name in EVENTS_NAMES.items():
+        for event_key, event_name in self.EVENTS_NAMES.items():
             representation.append(event_name)
             for subscriber in self.events[event_key]:
                 representation.append('- %s' % repr(subscriber))
