@@ -28,6 +28,7 @@ INPUT_EVENT = 0         # Input pressed
 AREA_SELECT = 1         # Area was selected
 PLAYER_ACTION = 2       # Any specific action from the player
 MENU_ACTION = 3         # Event to handle user input in menu
+LEAVE_EVENT = 4         # General idea of leaving typically by pressing Escape.
 
 # Game state management (10-20)
 NEW_STATE = 10          # Event to push a new game state
