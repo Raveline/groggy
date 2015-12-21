@@ -9,6 +9,7 @@ The use is pretty straightforward:
 - The event bus will propagate the event to the current input listener.
 '''
 import libtcodpy as tcod
+import groggy.events.bus as bus_events
 
 
 class Inputs(object):
@@ -62,12 +63,14 @@ class Inputs(object):
         input_value = keys.get(self.key.vk)
         if input_value:
             if input_value == Inputs.END:
-                self.bus.publish('quit', 4)
+                self.bus.publish('quit', bus_events.LEAVE_EVENT)
+            elif input_value == Inputs.ESCAPE:
+                self.bus.publish(None, bus_events.LEAVE_EVENT)
             elif input_value:
-                self.bus.publish(input_value, 0)
+                self.bus.publish(input_value, bus_events.INPUT_EVENT)
         else:
             if self.key.c >= 63 and self.key.c <= 122:
-                self.bus.publish(chr(self.key.c), 0)
+                self.bus.publish(chr(self.key.c), bus_events.INPUT_EVENT)
 
     def poll_mouse(self):
         '''
