@@ -75,8 +75,9 @@ class GameState(object):
         return substate
 
 
-class ScapeState(object):
+class ScapeState(GameState):
     def __init__(self, state_tree, parent_state=None, scape=None):
+        super(ScapeState, self).__init__(state_tree, parent_state)
         self.scape = scape
         """Sub actions can have a complement, the sub_object."""
         self.pauses_game = state_tree.get('pauses_game', True)
@@ -97,6 +98,7 @@ class ScapeState(object):
 
     def dispatch_selection_event(self, event_data):
         """React to a "confirmation" event."""
+        pass
 
     def receive(self, event):
         event_data = event.get('data')
