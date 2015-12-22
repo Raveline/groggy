@@ -1,5 +1,5 @@
 import libtcodpy as tcod
-import groggy.utils.bus as bus
+import groggy.events.bus as bus
 from groggy.inputs.input import Inputs
 
 
