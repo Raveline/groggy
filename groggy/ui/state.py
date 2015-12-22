@@ -32,7 +32,7 @@ This dictionnary would typically include the following information:
     - Finally, a "pauses_game" flag should tell if the game is paused when
     in this state or if real-time display should still be on.
 """
-from groggy.utils import bus
+from groggy.events import bus
 from groggy.inputs.input import Inputs
 
 NEW_STATE = 0
