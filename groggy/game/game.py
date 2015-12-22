@@ -79,7 +79,7 @@ class Game(object):
                 tick = True
                 counter = 0
             if tick and not self.state.pauses_game:
-                self.model_tick(self)
+                self.model_tick()
             self.display(blink)
             self.state.display(0)
             self.inputs.poll()
