@@ -106,9 +106,9 @@ class ScapeState(GameState):
         if event_type == bus.LEAVE_EVENT:
             self.check_for_previous_state()
         if event_type == bus.INPUT_EVENT:
-            self.dispatch_input_event()
+            self.dispatch_input_event(event_data)
         elif event_type == bus.AREA_SELECT:
-            self.dispatch_selection_event()
+            self.dispatch_selection_event(event_data)
             need_subobject = (bool(self.tree.get('submenu')) and
                               self.sub_object is None)
             if not need_subobject:
