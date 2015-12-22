@@ -56,10 +56,10 @@ class Component(object):
         pass
 
     def send_next(self):
-        bus.bus.publish(ComponentEvent.NEXT, bus.MENU_EVENT)
+        bus.bus.publish(ComponentEvent.NEXT, bus.MENU_ACTION)
 
     def send_previous(self):
-        bus.bus.publish(ComponentEvent.PREVIOUS, bus.MENU_EVENT)
+        bus.bus.publish(ComponentEvent.PREVIOUS, bus.MENU_ACTION)
 
     def update_selected_index(self, by):
         self.leave_focus()
@@ -124,10 +124,10 @@ class ContainerComponent(Component):
             child.update(values)
 
     def enter_focus(self):
-        bus.bus.subscribe(self, bus.MENU_EVENT)
+        bus.bus.subscribe(self, bus.MENU_ACTION)
 
     def leave_focus(self):
-        bus.bus.unsubscribe(self, bus.MENU_EVENT)
+        bus.bus.unsubscribe(self, bus.MENU_ACTION)
 
 
 class RootComponent(ContainerComponent):
@@ -136,10 +136,10 @@ class RootComponent(ContainerComponent):
         super(RootComponent, self).__init__(x, y, w, h, False, children)
         self.console = Console(x, y, w, h)
         self.title = title
-        bus.bus.subscribe(self, bus.MENU_EVENT)
+        bus.bus.subscribe(self, bus.MENU_ACTION)
 
     def deactivate(self):
-        bus.bus.unsubscribe(self, bus.MENU_EVENT)
+        bus.bus.unsubscribe(self, bus.MENU_ACTION)
         tcod.console_delete(self.console.console)
 
     def display(self, console):
