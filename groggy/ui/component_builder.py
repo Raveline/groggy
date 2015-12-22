@@ -1,4 +1,4 @@
-from groggy.utils import bus
+from groggy.events import bus
 from groggy.ui.components import (
     StaticText, TextBloc, RowsComponent, DynamicText, RootComponent,
     Button, Ruler, NumberPicker, Line, ComponentException)

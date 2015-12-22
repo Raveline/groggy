@@ -3,7 +3,7 @@ from __future__ import division
 import math
 import libtcodpy as tcod
 from groggy.inputs.input import Inputs
-from groggy.utils import bus
+from groggy.events import bus
 from groggy.utils.dict_path import read_path_dict
 from groggy.utils.tcod_wrapper import Console
 from groggy.view.show_console import display_highlighted_text, display_text
