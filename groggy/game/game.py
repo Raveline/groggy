@@ -12,6 +12,7 @@ class Game(object):
         self.height = height
         tcod.console_init_root(self.width, self.height, title)
         self.initialize_consoles()
+        self.initialize_world()
 
         self.inputs = Inputs(bus.bus)
         bus.bus.subscribe(self, bus.GAME_EVENT)
