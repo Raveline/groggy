@@ -164,7 +164,7 @@ class ScapeState(GameState):
 class MenuState(GameState):
     def __init__(self, state_tree, root_component, parent_state=None,
                  data=None):
-        super(MenuState, self).__init__(state_tree, None, parent_state)
+        super(MenuState, self).__init__(state_tree, parent_state)
         bus.bus.subscribe(self, bus.MENU_MODEL_EVENT)
         self.root_component = root_component
         self.set_data(data)
