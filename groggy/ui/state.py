@@ -57,8 +57,11 @@ class GameState(object):
                                        % self.tree)
         """Scape states must provide a viewport."""
         self.action = self.tree.get('action', '')
-        """Actions are associated to a main action."""
+        """The main action associated to this state."""
         self.actions = state_tree.get('actions', {})
+        """Potential substates if any"""
+        self.pauses_game = state_tree.get('pauses_game', True)
+        """By default, every state pauses game but the main state."""
 
     def receive(self, event):
         pass
@@ -88,8 +91,6 @@ class ScapeState(GameState):
         super(ScapeState, self).__init__(state_tree, parent_state)
         self.scape = scape
         """Sub actions can have a complement, the sub_object."""
-        self.pauses_game = state_tree.get('pauses_game', True)
-        """By default, every state pauses game but the main state."""
 
     def dispatch_input_event(self, event_data):
         """React to a simple input. Very often, it will mean
