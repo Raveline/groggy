@@ -126,9 +126,9 @@ class ScapeState(GameState):
             - There is no current selection in the scape
             - There is a parent state
         """
-        if not self.navigator.selection and self.parent_state is not None:
+        if not self.scape.selection and self.parent_state is not None:
             bus.bus.publish(self.parent_state, bus.PREVIOUS_STATE)
-            self.navigator.set_char()
+            self.scape.set_char()
             return True
         return False
 
