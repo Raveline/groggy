@@ -71,8 +71,16 @@ class GameState(object):
         if substate:
             bus.bus.publish(substate,
                             bus.NEW_STATE)
-            self.navigator.set_char()
+            self.scape.set_char()
         return substate
+
+    def activate(self):
+        """Actions to take when entering state."""
+        pass
+
+    def deactivate(self):
+        """Actions to take when leaving state."""
+        pass
 
 
 class ScapeState(GameState):
@@ -82,14 +90,6 @@ class ScapeState(GameState):
         """Sub actions can have a complement, the sub_object."""
         self.pauses_game = state_tree.get('pauses_game', True)
         """By default, every state pauses game but the main state."""
-
-    def deactivate(self):
-        """Actions to take when leaving state."""
-        pass
-
-    def activate(self):
-        """Actions to take when entering state."""
-        pass
 
     def dispatch_input_event(self, event_data):
         """React to a simple input. Very often, it will mean
