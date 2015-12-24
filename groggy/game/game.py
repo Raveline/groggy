@@ -10,9 +10,11 @@ class Game(object):
     def __init__(self, title, width, height, fps=60):
         self.width = width
         self.height = height
+
         tcod.console_init_root(self.width, self.height, title)
-        self.initialize_consoles()
+        self.consoles = self.initialize_consoles()
         self.initialize_world()
+        self.displayer = self.initialize_displayer()
 
         self.inputs = Inputs(bus.bus)
         bus.bus.subscribe(self, bus.GAME_EVENT)
@@ -37,6 +39,12 @@ class Game(object):
         """
         raise NotImplementedError('initialize_world must be implemented')
 
+    def initialize_displayer(self):
+        """
+        Setup the Displayer.
+        """
+        raise NotImplementedError('initialize_displayer must be implemented')
+
     def setup_first_state(self):
         """
         Create the first state of the game
@@ -55,11 +63,11 @@ class Game(object):
         """
         raise NotImplementedError('build_state must be implemented.')
 
-    def display(self):
+    def display(self, blink):
         """
         Fill the consoles with various information.
         """
-        raise NotImplementedError('display must be implemented.')
+        pass
 
     def loop(self):
         """
@@ -80,7 +88,7 @@ class Game(object):
                 counter = 0
             if tick and not self.state.pauses_game:
                 self.model_tick()
-            self.display(blink)
+            self.displayer.call(blink, self.state, self.consoles)
             self.state.display(0)
             self.inputs.poll()
             tcod.console_flush()
