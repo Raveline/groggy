@@ -31,7 +31,7 @@ This dictionnary would typically include the following information:
     Game class.
     - Finally, a "pauses_game" flag should tell if the game is paused when
     in this state or if real-time display should still be on.
-"""
+    """
 from groggy.events import bus
 from groggy.inputs.input import Inputs
 
@@ -132,9 +132,6 @@ class ScapeState(GameState):
             self.scape.set_char()
             return True
         return False
-
-    def display(self, console):
-        pass
 
     def __repr__(self):
         if self.sub_object_display:
