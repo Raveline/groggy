@@ -6,8 +6,7 @@ from groggy.view.show_console import display_text
 
 
 class Informer(object):
-    def __init__(self, console):
-        self.console = console
+    def __init__(self):
         self.text = ''
 
     def receive(self, event):
