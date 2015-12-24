@@ -89,7 +89,6 @@ class Game(object):
             if tick and not self.state.pauses_game:
                 self.model_tick()
             self.displayer.call(blink, self.state, self.consoles)
-            self.state.display(0)
             self.inputs.poll()
             tcod.console_flush()
             tick = False
