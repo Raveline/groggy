@@ -37,13 +37,16 @@ from groggy.inputs.input import Inputs
 
 NEW_STATE = 0
 
+NAVIGATING_STATE = 0
+MENU_STATE = 1
+
 
 class InvalidTreeException(Exception):
     pass
 
 
 class GameState(object):
-    def __init__(self, state_tree, parent_state=None):
+    def __init__(self, state_tree, state_type, parent_state=None):
         self.tree = state_tree
         """The stree definition of this state."""
         self.parent_state = parent_state
@@ -62,6 +65,10 @@ class GameState(object):
         """Potential substates if any"""
         self.pauses_game = state_tree.get('pauses_game', True)
         """By default, every state pauses game but the main state."""
+        self.state_type = state_type
+
+    def is_scape_state(self):
+        return self.state_type == NAVIGATING_STATE
 
     def receive(self, event):
         pass
@@ -88,7 +95,8 @@ class GameState(object):
 
 class ScapeState(GameState):
     def __init__(self, state_tree, parent_state=None, scape=None):
-        super(ScapeState, self).__init__(state_tree, parent_state)
+        super(ScapeState, self).__init__(state_tree, NAVIGATING_STATE,
+                                         parent_state)
         self.scape = scape
         """Sub actions can have a complement, the sub_object."""
 
@@ -162,7 +170,7 @@ class ScapeState(GameState):
 class MenuState(GameState):
     def __init__(self, state_tree, root_component, parent_state=None,
                  data=None):
-        super(MenuState, self).__init__(state_tree, parent_state)
+        super(MenuState, self).__init__(state_tree, MENU_STATE, parent_state)
         bus.bus.subscribe(self, bus.MENU_MODEL_EVENT)
         self.root_component = root_component
         self.set_data(data)
@@ -200,9 +208,6 @@ class MenuState(GameState):
         else:
             if not self._check_for_previous_state(event_data):
                 self.root_component.receive(event_data)
-
-    def display(self, console):
-        self.root_component.display(console)
 
     def receive_model_event(self, event_data):
         pass
