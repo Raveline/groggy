@@ -20,6 +20,7 @@ class Game(object):
         bus.bus.subscribe(self, bus.GAME_EVENT)
         bus.bus.subscribe(self, bus.NEW_STATE)
         bus.bus.subscribe(self, bus.PREVIOUS_STATE)
+        bus.bus.subscribe(self, bus.LEAVE_EVENT)
 
         self.state = None
         self.continue_game = True
@@ -97,11 +98,13 @@ class Game(object):
             # Remove the old state from input receiving
             bus.bus.unsubscribe(self.state, bus.INPUT_EVENT)
             bus.bus.unsubscribe(self.state, bus.AREA_SELECT)
+            bus.bus.unsubscribe(self.state, bus.LEAVE_EVENT)
             self.state.deactivate()
         self.state = new_state
         # Add the new state to input receiving
         bus.bus.subscribe(self.state, bus.INPUT_EVENT)
         bus.bus.subscribe(self.state, bus.AREA_SELECT)
+        bus.bus.subscribe(self.state, bus.LEAVE_EVENT)
         self.state.activate()
 
     def receive(self, event):
