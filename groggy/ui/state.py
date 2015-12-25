@@ -179,7 +179,7 @@ class MenuState(GameState):
         self.data = data
         self.root_component.set_data(data)
 
-    def _check_for_previous_state(self, event_data):
+    def check_for_previous_state(self, event_data):
         if event_data == Inputs.ESCAPE:
             bus.bus.publish(self.parent_state, bus.PREVIOUS_STATE)
             return True
@@ -206,7 +206,7 @@ class MenuState(GameState):
         if event.get('type') == bus.MENU_MODEL_EVENT:
             self.receive_model_event(event_data)
         else:
-            if not self._check_for_previous_state(event_data):
+            if not self.check_for_previous_state(event_data):
                 self.root_component.receive(event_data)
 
     def receive_model_event(self, event_data):
