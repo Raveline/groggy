@@ -75,7 +75,7 @@ class Bus(object):
         event = {'type': event_type,
                  'data': event}
         if self.debug:
-            print(event_display(event))
+            print(self.event_display(event))
         # For MENU EVENT, act in a stacky, LIFO way
         if event_type == MENU_ACTION:
             self.events.get(event_type)[-1].receive(event.get('data'))
