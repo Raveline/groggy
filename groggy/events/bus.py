@@ -52,7 +52,7 @@ class Bus(object):
                     PREVIOUS_STATE: 'Previous state',
                     MENU_ACTION: 'Menu event',
                     MENU_MODEL_EVENT: 'Menu model event',
-                    GAME_EVENT: 'Game event',
+                    LEAVE_EVENT: 'Leave event',
                     WORLD_EVENT: 'World event'}
 
     def __init__(self):
@@ -89,7 +89,7 @@ class Bus(object):
         Return a proper string for a single event.
         '''
         return 'Event fired. Type %s - data : %s' % (
-            self.EVENTS_NAMES.get(event['type'], 'unknown'),
+            self.EVENTS_NAMES.get(event['type'], 'unknown (%d)' % event['type']),
             event['data'])
 
     def __str__(self):
