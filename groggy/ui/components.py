@@ -160,7 +160,7 @@ class RootComponent(ContainerComponent):
                               0, tcod.BKGND_SET, tcod.CENTER, self.title)
         for child in self.children:
             child.display(self.console.console)
-        self.console.blit_on(console)
+        self.console.blit_on(console.console)
 
     def set_children(self, children):
         super(RootComponent, self).set_children(children)
