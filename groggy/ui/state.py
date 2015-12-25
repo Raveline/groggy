@@ -113,7 +113,7 @@ class ScapeState(GameState):
         event_data = event.get('data')
         event_type = event.get('type')
         if event_type == bus.LEAVE_EVENT:
-            self.check_for_previous_state()
+            self.check_for_previous_state(event_data)
         if event_type == bus.INPUT_EVENT:
             self.dispatch_input_event(event_data)
         elif event_type == bus.AREA_SELECT:
@@ -180,10 +180,9 @@ class MenuState(GameState):
         self.root_component.set_data(data)
 
     def check_for_previous_state(self, event_data):
-        if event_data == Inputs.ESCAPE:
+        if not event_data:
             bus.bus.publish(self.parent_state, bus.PREVIOUS_STATE)
-            return True
-        return False
+        return True
 
     def deactivate(self):
         bus.bus.unsubscribe(self, bus.MENU_MODEL_EVENT)
@@ -203,11 +202,13 @@ class MenuState(GameState):
 
     def receive(self, event):
         event_data = event.get('data')
-        if event.get('type') == bus.MENU_MODEL_EVENT:
+        event_type = event.get('type')
+        if event_type == bus.MENU_MODEL_EVENT:
             self.receive_model_event(event_data)
+        elif event_type == bus.LEAVE_EVENT:
+            self.check_for_previous_state(event_data)
         else:
-            if not self.check_for_previous_state(event_data):
-                self.root_component.receive(event_data)
+            self.root_component.receive(event_data)
 
     def receive_model_event(self, event_data):
         pass
