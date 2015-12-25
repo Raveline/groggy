@@ -11,6 +11,9 @@ class Displayer(object):
     def __init__(self, model):
         self.model = model
 
+    def display(self, blink, state, consoles):
+        raise NotImplementedError('Display method must be implemented.')
+
     def call(self, blink, state, consoles):
         self.display(blink, state, consoles)
         for console in consoles.values():
