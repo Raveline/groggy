@@ -90,7 +90,6 @@ class Game(object):
                 self.model_tick()
             self.displayer.call(blink, self.state, self.consoles)
             self.inputs.poll()
-            tcod.console_flush()
             tick = False
 
     def change_state(self, new_state):
