@@ -70,10 +70,14 @@ class Game(object):
         """
         pass
 
-    def loop(self):
+    def before_loop(self):
+        pass
+
+    def start_loop(self):
         """
         Main game loop.
         """
+        self.before_loop()
         tcod.sys_set_fps(50)
         # Couting elapsed milliseconds
         counter = 0
@@ -87,11 +91,14 @@ class Game(object):
                 blink = not blink
                 tick = True
                 counter = 0
-            if tick and not self.state.pauses_game:
-                self.model_tick()
-            self.displayer.call(blink, self.state, self.consoles)
-            self.inputs.poll()
+            self.loop_content(tick, blink)
             tick = False
+
+    def loop_content(self, tick, blink):
+        if tick and not self.state.pauses_game:
+            self.model_tick()
+        self.displayer.call(blink, self.state, self.consoles)
+        self.inputs.poll()
 
     def change_state(self, new_state):
         if self.state is not None:
