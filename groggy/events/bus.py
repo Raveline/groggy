@@ -21,6 +21,7 @@ giving the proper information.
 When any piece of code wants to send an event, it simply calls the "publish"
 method of the bus with the event and the event_type as parameters.
 '''
+import inspect
 from collections import defaultdict
 
 # Input management (0-10)
@@ -58,6 +59,7 @@ class Bus(object):
     def __init__(self):
         self.events = defaultdict(list)
         self.debug = False
+        self.max_debug = False
 
     def subscribe(self, receiver, event_type):
         self.events[event_type].append(receiver)
@@ -76,6 +78,12 @@ class Bus(object):
                  'data': event}
         if self.debug:
             print(self.event_display(event))
+            if self.max_debug:
+                curframe = inspect.currentframe()
+                calframe = inspect.getouterframes(curframe, 2)
+                print("From : %s" % calframe[1][3])
+
+
         # For MENU EVENT, act in a stacky, LIFO way
         if event_type == MENU_ACTION:
             self.events.get(event_type)[-1].receive(event.get('data'))
