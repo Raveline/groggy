@@ -1,9 +1,18 @@
+class InvalidPathException(Exception):
+    pass
+
+
 def read_path_dict(dic, key):
     """Read a "path-like" dict, thus translating "sub.one.two" into
     dict.get("sub").get("one").get("two")
     """
-    key = key.split('.')
+    key_elements = key.split('.')
     current = dic
-    for elem in key[:-1]:
-        current = dic.get(elem)
-    return current[key[-1]]
+    for elem in key_elements[:-1]:
+        current = current.get(elem)
+        if current is None:
+            raise InvalidPathException(
+                'Path was %s. Could not find key %s in dict %s.'
+                % (key, elem, dic)
+            )
+    return current[key_elements[-1]]
