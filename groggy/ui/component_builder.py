@@ -168,4 +168,5 @@ BUILDERS = {'TextBloc': build_text_bloc,
             'Line': build_line,
             'DynamicText': build_dynamic_text,
             'Ruler': build_ruler,
+            'Button': build_button,
             'NumberPicker': build_number_picker}
