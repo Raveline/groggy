@@ -22,7 +22,9 @@ When any piece of code wants to send an event, it simply calls the "publish"
 method of the bus with the event and the event_type as parameters.
 '''
 import inspect
+import logging
 from collections import defaultdict
+
 
 # Input management (0-10)
 INPUT_EVENT = 0         # Input pressed
@@ -61,6 +63,25 @@ class Bus(object):
         self.debug = False
         self.max_debug = False
 
+    def activate_debug_mode(self, maximum=False, type_blacklist=None):
+        """
+        Set up the debug mode. Events will be logged to the event_debug.log
+        file. A list of events not to be logged can be given in parameter.
+        Setting the "maximum" flag will also log where the events came from.
+        """
+        self.debug = True
+        self.max_debug = maximum
+        self.logger = logging.getLogger('event_bus')
+        handler = logging.FileHandler('event_debug.log')
+        formatter = logging.Formatter(
+            '%(asctime)s - %(levelname)s - %(message)s')
+        handler.setFormatter(formatter)
+        self.logger.addHandler(handler)
+        self.logger.setLevel(logging.INFO)
+        if self.max_debug:
+            self.logger.setLevel(logging.DEBUG)
+        self.type_blacklist = type_blacklist or []
+
     def subscribe(self, receiver, event_type):
         self.events[event_type].append(receiver)
 
@@ -76,12 +97,16 @@ class Bus(object):
         '''
         event = {'type': event_type,
                  'data': event}
-        if self.debug:
-            print(self.event_display(event))
+        if self.debug and event_type not in self.type_blacklist:
+            self.logger.info(self.event_display(event))
             if self.max_debug:
                 curframe = inspect.currentframe()
                 calframe = inspect.getouterframes(curframe, 2)
-                print("From : %s" % calframe[1][3])
+                module = calframe[1][1]
+                loc = calframe[1][2]
+                method = calframe[1][3]
+                self.logger.debug("Send by %s:%s (module %s)",
+                                  method, loc, module)
 
 
         # For MENU EVENT, act in a stacky, LIFO way
