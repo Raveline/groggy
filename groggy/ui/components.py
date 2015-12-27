@@ -186,6 +186,10 @@ class RootComponent(ContainerComponent):
 
 
 class TextBloc(Component):
+    """
+    A never selectable rectangle of text, used to display long
+    information to the player.
+    """
     def __init__(self, x, y, w, text):
         super(TextBloc, self).__init__(x, y, w)
         self.text = text
@@ -195,6 +199,10 @@ class TextBloc(Component):
 
 
 class StaticText(Component):
+    """
+    A never selectable simple line of text.
+    Typically used as a lable for some information or other component.
+    """
     def __init__(self, x, y, text):
         super(StaticText, self).__init__(x, y)
         self.text = text
@@ -204,6 +212,10 @@ class StaticText(Component):
 
 
 class DynamicText(Component):
+    """
+    A never selectable, changing according to model, line
+    of text.
+    """
     def __init__(self, x, y, centered, source):
         super(DynamicText, self).__init__(x, y)
         self.centered = centered
@@ -220,7 +232,10 @@ class DynamicText(Component):
 
 
 class RowsComponent(ContainerComponent):
-    def __init__(self, x, y, w=0, h=0, is_selectable=False, contents=None):
+    """
+    A series of components built as a line.
+    """
+    def __init__(self, x, y, w=0, h=0, selectable=False, contents=None):
         super(RowsComponent).__init__(x, y, w, h, is_selectable)
         if contents is None:
             contents = []
@@ -262,8 +277,12 @@ class ColumnedLine(Component):
 
 
 class Button(Component):
-    def __init__(self, x, y, w, text, events, events_types):
-        super(Button, self).__init__(x, y, w, 1, True)
+    """
+    A button that, if selectable and pressed, will trigger
+    an event.
+    """
+    def __init__(self, x, y, w, text, events, events_types, selectable=True):
+        super(Button, self).__init__(x, y, w, 1, selectable)
         self.text = text
         self.events = events
         self.events_types = events_types
@@ -281,6 +300,9 @@ class Button(Component):
 
 
 class Line(Component):
+    """
+    A simple horizontal line to separate areas.
+    """
     def __init__(self, x, y, w):
         super(Line, self).__init__(x, y, w, 1)
 
@@ -320,8 +342,8 @@ class MinimumMaximum(Component):
 
 
 class NumberPicker(MinimumMaximum):
-    def __init__(self, x, y, source):
-        super(NumberPicker, self).__init__(x, y, 15, 1, True)
+    def __init__(self, x, y, source, selectable=True):
+        super(NumberPicker, self).__init__(x, y, 15, 1, selectable)
         self.source = source
 
     def display(self, console):
@@ -352,8 +374,8 @@ class NumberPicker(MinimumMaximum):
 
 
 class Ruler(MinimumMaximum):
-    def __init__(self, x, y, w, source):
-        super(Ruler, self).__init__(x, y, w, 1, True)
+    def __init__(self, x, y, w, source, selectable=True):
+        super(Ruler, self).__init__(x, y, w, 1, selectable)
         self.source = source
         self.value = 0
 

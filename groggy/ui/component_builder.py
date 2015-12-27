@@ -4,6 +4,10 @@ from groggy.ui.components import (
     Button, Ruler, NumberPicker, Line, ComponentException)
 
 
+class UnknownComponentException(Exception):
+    pass
+
+
 def build_menu(context, menu_description, root=False):
     """
     Build a menu state.
@@ -24,65 +28,94 @@ def build_menu(context, menu_description, root=False):
     return build_component(context, menu_description, children, root)
 
 
+def build_text_bloc(component_description, x, y, w, h, selectable):
+    content = component_description.get('content', '')
+    return TextBloc(x, y, w, content)
+
+def build_static_text(component_description, x, y, w, h, selectable):
+    content = component_description.get('content', '')
+    return StaticText(x, y, content)
+
+def build_rows(component_description, x, y, w, h, selectable):
+    content = component_description.get('content')
+    return RowsComponent(x, y, w, h, contents=content, selectable=selectable)
+
+def build_line(component_description, x, y, w, h, selectable):
+    return Line(x, y, w)
+
+def build_dynamic_text(component_description, x, y, w, h, selectable):
+    content = component_description.get('content')
+    is_centered = component_description.get('centered', False)
+    source = component_description.get('source', None)
+    return DynamicText(x, y, is_centered, source)
+
+def build_button(component_description, x, y, w, h, selectable):
+    text = component_description.get('text')
+    event = component_description.get('event')
+    event_type = component_description.get('event_type')
+    return Button(x, y, w, text, [event], [event_type], selectable)
+
+def build_ruler(component_description, x, y, w, h, selectable):
+    if selectable is None:
+        selectable = True
+    source = component_description.get('source')
+    return Ruler(x, y, w, source, selectable=selectable)
+
+def build_number_picker(component_description, x, y, w, h, selectable):
+    if selectable is None:
+        selectable = True
+    source = component_description.get('source')
+    return NumberPicker(x, y, source, selectable=selectable)
+
+
 def build_component(context, comp_desc, children=None, root=False):
-        component = None
-        x, y, w, h = read_dimensions(context, comp_desc)
-        if comp_desc.get('eat_line', True):
-            context['last_y'] = y
-        is_selectable = comp_desc.get('selectable', False)
-        comp_type = comp_desc.get('type')
-        if root:
-            title = comp_desc.get('title', '')
-            component = RootComponent(x, y, w, h, title, children)
-            return component
-        elif comp_type == 'TextBloc':
-            content = comp_desc.get('content', '')
-            component = TextBloc(x, y, w, content)
-        elif comp_type == 'StaticText':
-            content = comp_desc.get('content', '')
-            component = StaticText(x, y, content)
-        elif comp_type == 'RowsComponent':
-            content = comp_desc.get('content', '[]')
-            component = RowsComponent(x, y, w, h, is_selectable, content)
-        elif comp_type == 'Line':
-            component = Line(x, y, w)
-        elif comp_type == 'DynamicText':
-            content = comp_desc.get('content')
-            is_centered = comp_desc.get('centered', False)
-            source = comp_desc.get('source', None)
-            component = DynamicText(x, y, is_centered, source)
-        elif comp_type == 'Button':
-            text = comp_desc.get('text')
-            event = comp_desc.get('event')
-            event_type = comp_desc.get('event_type')
-            component = Button(x, y, w, text, [event], [event_type])
-        elif comp_type == 'Ruler':
-            source = comp_desc.get('source')
-            component = Ruler(x, y, w, source)
-        elif comp_type == 'NumberPicker':
-            source = comp_desc.get('source')
-            component = NumberPicker(x, y, source)
-        elif comp_type == 'Foreach':
-            source = comp_desc.get('source').split('.')
-            iterable = context
-            for path in source:
-                iterable = iterable[path]
-            components = []
-            do_desc = comp_desc.get('do')
-            for elem in iterable:
-                for to_do in do_desc:
-                    source_builder = to_do.get('source_builder')
-                    if source_builder:
-                        to_do['source'] = '.'.join([str(elem), source_builder])
-                    else:
-                        to_do['source'] = str(elem)
-                        if to_do.get('type') == 'StaticText':
-                            to_do['content'] = to_do['source']
-                    components += build_component(context, to_do)
-            return components
-        if children is not None:
-            component.set_children(children)
-        return [component]
+    component = None
+
+    x, y, w, h = read_dimensions(context, comp_desc)
+    if comp_desc.get('eat_line', True):
+        context['last_y'] = y
+
+    selectable = comp_desc.get('selectable', None)
+    component_type = comp_desc.get('type')
+
+    if root:
+        title = comp_desc.get('title', '')
+        component = RootComponent(x, y, w, h, title, children)
+        return component
+
+    if component_type == 'Foreach':
+        return build_foreach(comp_desc, x, y, w, h, context)
+    component_builder = BUILDERS.get(component_type)
+    if not component_builder:
+        raise UnknownComponentException(
+            'Component of type %s is unknown' % component_type
+        )
+    else:
+        component = component_builder(comp_desc, x, y, w, h, selectable)
+
+    if children is not None:
+        component.set_children(children)
+    return [component]
+
+
+def build_foreach(component_description, x, y, w, h, context):
+    source = component_description.get('source').split('.')
+    iterable = context
+    for path in source:
+        iterable = iterable[path]
+    components = []
+    do_desc = component_description.get('do')
+    for elem in iterable:
+        for to_do in do_desc:
+            source_builder = to_do.get('source_builder')
+            if source_builder:
+                to_do['source'] = '.'.join([str(elem), source_builder])
+            else:
+                to_do['source'] = str(elem)
+                if to_do.get('type') == 'StaticText':
+                    to_do['content'] = to_do['source']
+            components += build_component(context, to_do)
+    return components
 
 
 def read_dimensions(context, tree):
@@ -127,3 +160,12 @@ def make_questionbox(x, y, w, h, title, text, from_state, event_yes,
     yes = Button(1, h - 3, w - 2, 'Yes', event_yes, event_type)
     no = Button(1, h - 2, w - 2, 'No', [from_state], [bus.PREVIOUS_STATE])
     return RootComponent(x, y, w, h, title, [tbc, yes, no])
+
+
+BUILDERS = {'TextBloc': build_text_bloc,
+            'StaticText': build_static_text,
+            'RowsComponent': build_rows,
+            'Line': build_line,
+            'DynamicText': build_dynamic_text,
+            'Ruler': build_ruler,
+            'NumberPicker': build_number_picker}
