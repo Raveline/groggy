@@ -8,6 +8,10 @@ class UnknownComponentException(Exception):
     pass
 
 
+class MissingContextException(Exception):
+    pass
+
+
 def build_menu(context, menu_description, root=False):
     """
     Build a menu state.
@@ -104,7 +108,11 @@ def build_foreach(component_description, x, y, w, h, context):
     source = component_description.get('source').split('.')
     iterable = context
     for path in source:
-        iterable = iterable[path]
+        try:
+            iterable = iterable[path]
+        except:
+            raise MissingContextException('Could not find key %s in context %s'
+                                          % (path, context))
     components = []
     do_desc = component_description.get('do')
     for elem in iterable:
