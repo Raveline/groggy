@@ -53,6 +53,8 @@ def build_button(component_description, x, y, w, h, selectable):
     text = component_description.get('text')
     event = component_description.get('event')
     event_type = component_description.get('event_type')
+    if selectable is None:
+        selectable = True
     return Button(x, y, w, text, [event], [event_type], selectable)
 
 def build_ruler(component_description, x, y, w, h, selectable):
