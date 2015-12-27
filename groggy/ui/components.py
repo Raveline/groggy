@@ -95,6 +95,9 @@ class ContainerComponent(Component):
         return self.selectable_children[self.selected_index]
 
     def receive(self, event_data):
+        number_of_selectables = len(self.selectable_children)
+        if number_of_selectables == 0:
+            return
         if event_data == ComponentEvent.NEXT:
             self.update_selected_index(1)
         elif event_data == ComponentEvent.PREVIOUS:
@@ -113,7 +116,7 @@ class ContainerComponent(Component):
             self.leave_focus()
             self.send_previous()
         elif self.selected_index >= len(self.selectable_children):
-            self.selected_index = len(self.selectable_children) - 1
+            self.selected_index = len(self.selected_children) - 1
             self.leave_focus()
             self.send_next()
         else:
