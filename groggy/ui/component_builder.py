@@ -36,22 +36,26 @@ def build_text_bloc(component_description, x, y, w, h, selectable):
     content = component_description.get('content', '')
     return TextBloc(x, y, w, content)
 
+
 def build_static_text(component_description, x, y, w, h, selectable):
     content = component_description.get('content', '')
     return StaticText(x, y, content)
+
 
 def build_rows(component_description, x, y, w, h, selectable):
     content = component_description.get('content')
     return RowsComponent(x, y, w, h, contents=content, selectable=selectable)
 
+
 def build_line(component_description, x, y, w, h, selectable):
     return Line(x, y, w)
 
+
 def build_dynamic_text(component_description, x, y, w, h, selectable):
-    content = component_description.get('content')
     is_centered = component_description.get('centered', False)
     source = component_description.get('source', None)
     return DynamicText(x, y, is_centered, source)
+
 
 def build_button(component_description, x, y, w, h, selectable):
     text = component_description.get('text')
@@ -61,11 +65,13 @@ def build_button(component_description, x, y, w, h, selectable):
         selectable = True
     return Button(x, y, w, text, [event], [event_type], selectable)
 
+
 def build_ruler(component_description, x, y, w, h, selectable):
     if selectable is None:
         selectable = True
     source = component_description.get('source')
     return Ruler(x, y, w, source, selectable=selectable)
+
 
 def build_number_picker(component_description, x, y, w, h, selectable):
     if selectable is None:
@@ -159,17 +165,73 @@ def read_dimensions(context, tree):
     return x, y, w, h
 
 
-def make_textbox(x, y, w, h, title, text):
+def make_text_box(x, y, w, h, title, text):
     tbc = TextBloc(1, 1, w - 1, text)
     return RootComponent(x, y, w, h, title, [tbc])
 
 
-def make_questionbox(x, y, w, h, title, text, from_state, event_yes,
-                     event_type):
+def make_question_box(x, y, w, h, title, text, from_state, events_yes,
+                      events_types):
+    """
+    Build a question box with a "YES / NO" choice.
+
+    Args:
+        x (int): x pos of the box
+        y (int): y pos of the box
+        w (int): width of the box
+        h (int): height of the box
+        title (str): Title for the box
+        text (str): A little (or long !) text to present the offered choice
+        from_state (State): Where this box comes from, to be able to cancel
+        event_yes (list): A list of events to fire if yes is picked
+        event_type (list): Type of the events to fire if yes is picked
+
+    Returns:
+        RootComponent: The root component for a new menu state
+    """
     tbc = TextBloc(1, 1, w - 2, text)
-    yes = Button(1, h - 3, w - 2, 'Yes', event_yes, event_type)
+    yes = Button(1, h - 3, w - 2, 'Yes', events_yes, events_types)
     no = Button(1, h - 2, w - 2, 'No', [from_state], [bus.PREVIOUS_STATE])
     return RootComponent(x, y, w, h, title, [tbc, yes, no])
+
+
+def make_choice_box(x, y, w, title, text, from_state, choices_strs,
+                    choices_events, events_types):
+    """
+    Build a choice box with several choices and a "cancel" one.
+
+    Args:
+        x (int): x pos of the box
+        y (int): y pos of the box
+        w (int): width of the box
+        h (int): height of the box
+        title (str): Title for the box
+        text (str): A little (or long !) text to present the offered choice
+        from_state (State): Where this box comes from, to be able to cancel
+        choices_strs (list): A list of text to display for each choices
+        choices_events (list): A list of list of events to fire for
+                               each choices.
+        event_type (list): Type of the events to fire for each
+                           choices.
+
+    Returns:
+        RootComponent: The root component for a new menu state
+    """
+    tbc = TextBloc(1, 1, w - 2, text)
+    # TODO : we will have to know the size of this text if it's longer than
+    # 2 lines !
+    components = [tbc]
+    number_of_answers = len(choices_strs)
+    for idx, (string, event) in enumerate(zip(choices_strs, choices_events)):
+        button = Button(1, 3 + idx, w - 2, string, event, events_types)
+        components.append(button)
+    cancel = Button(1, 3 + number_of_answers + 1, w - 2,
+                    'Cancel', [from_state], [bus.PREVIOUS_STATE])
+    components.append(cancel)
+    # Height is : 2 drawing box line + 1 text (see todo) + 1 line between
+    # text and choices + 1 line for cancel + 1 before + 1 after.
+    height = number_of_answers + 7
+    return RootComponent(x, y, w, height, title, components)
 
 
 BUILDERS = {'TextBloc': build_text_bloc,
