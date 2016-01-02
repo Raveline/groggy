@@ -249,7 +249,7 @@ class Fillhair(Crosshair):
                 self.selection.y2 - self.scape.frame.y)
 
     def set_selected(self):
-        self.selection = self.func_filler(self.getX(), self.getY(), self.getZ())
+        self.selection = self.func_filler((self.getX(), self.getY(), self.getZ()))
 
     def enter_select(self):
         self.set_selected()
