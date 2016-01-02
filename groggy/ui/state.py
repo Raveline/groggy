@@ -33,7 +33,6 @@ This dictionnary would typically include the following information:
     in this state or if real-time display should still be on.
     """
 from groggy.events import bus
-from groggy.inputs.input import Inputs
 
 NEW_STATE = 0
 
@@ -90,6 +89,10 @@ class GameState(object):
 
     def deactivate(self):
         """Actions to take when leaving state."""
+        pass
+
+    def clean(self):
+        """Actions to take when state should be destroyed."""
         pass
 
 
@@ -171,7 +174,6 @@ class MenuState(GameState):
     def __init__(self, state_tree, root_component, parent_state=None,
                  data=None):
         super(MenuState, self).__init__(state_tree, MENU_STATE, parent_state)
-        bus.bus.subscribe(self, bus.MENU_MODEL_EVENT)
         self.root_component = root_component
         self.set_data(data)
 
@@ -184,8 +186,13 @@ class MenuState(GameState):
             bus.bus.publish(self.parent_state, bus.PREVIOUS_STATE)
         return True
 
+    def activate(self):
+        bus.bus.subscribe(self, bus.MENU_MODEL_EVENT)
+
     def deactivate(self):
         bus.bus.unsubscribe(self, bus.MENU_MODEL_EVENT)
+
+    def clean(self):
         self.root_component.deactivate()
 
     def update_data_dict(self, source, new):
