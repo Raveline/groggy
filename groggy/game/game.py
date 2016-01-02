@@ -3,6 +3,10 @@ import groggy.events.bus as bus
 from groggy.inputs.input import Inputs
 
 
+class StateSwitchingException(Exception):
+    pass
+
+
 class Game(object):
     """
     An abstraction to represent the whole game process.
@@ -23,6 +27,10 @@ class Game(object):
         bus.bus.subscribe(self, bus.LEAVE_EVENT)
 
         self.state = None
+        """The current state"""
+        self.state_stack = []
+        """All previous states, in the order they were entered"""
+
         self.continue_game = True
         self.setup_first_state()
 
@@ -107,6 +115,10 @@ class Game(object):
             bus.bus.unsubscribe(self.state, bus.AREA_SELECT)
             bus.bus.unsubscribe(self.state, bus.LEAVE_EVENT)
             self.state.deactivate()
+        else:
+            # This is the first state ever : it should be
+            # put on the stack only once, this very time.
+            self.state_stack.append(new_state)
         self.state = new_state
         # Add the new state to input receiving
         bus.bus.subscribe(self.state, bus.INPUT_EVENT)
@@ -119,8 +131,21 @@ class Game(object):
         if event.get('type', '') == bus.NEW_STATE:
             new_state = self.build_state(event_data)
             if new_state is not None:
+                self.state_stack.append(new_state)
                 self.change_state(new_state)
         elif event.get('type', '') == bus.PREVIOUS_STATE:
+            if event_data in self.state_stack:
+                idx = self.state_stack.index(event_data)
+                stale_states = self.state_stack[idx + 1:]
+                for stale_state in stale_states:
+                    stale_state.clean()
+                self.state_stack = self.state_stack[:idx + 1]
+                self.change_state(event_data)
+            else:
+                raise StateSwitchingException(
+                    'State %s was not in the stack of previous states.'
+                    % event_data
+                )
             self.change_state(event_data)
         elif event_data == 'quit':
             self.continue_game = False
