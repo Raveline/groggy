@@ -142,6 +142,9 @@ class ScapeState(GameState):
             bus.bus.publish(self.parent_state, bus.PREVIOUS_STATE)
             self.scape.set_char()
             return True
+        elif self.scape.selection:
+            self.scape.set_char()
+            self.sub_object = None
         return False
 
     def __repr__(self):
