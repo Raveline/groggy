@@ -15,11 +15,12 @@ class ListComponent(ContainerComponent):
 
     def set_data(self, data):
         items = read_path_dict(data, self.source)
-        self.children = []
+        children = []
         for idx, elem in enumerate(items):
-            self.children.append(
+            children.append(
                 ListItemComponent(self.x, self.y + idx, self.w, elem)
             )
+        self.set_children(children)
 
     def display(self, console):
         for child in self.children:
@@ -28,7 +29,7 @@ class ListComponent(ContainerComponent):
 
 class ListItemComponent(Component):
     def __init__(self, x, y, w, item):
-        super(ListItemComponent, self).__init__(x, y, w, 1)
+        super(ListItemComponent, self).__init__(x, y, w, 1, True)
         self.item = item
         self.activated = False
 
