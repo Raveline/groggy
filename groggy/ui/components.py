@@ -45,6 +45,10 @@ class Component(object):
             self.right()
         elif event_data == Inputs.ENTER:
             self.enter()
+        elif event_data == Inputs.BACKSPACE:
+            self.backspace()
+        elif ord(event_data) >= 63 and ord(event_data) <= 122:
+            self.letter(event_data)
 
     def left(self):
         pass
@@ -53,6 +57,12 @@ class Component(object):
         pass
 
     def enter(self):
+        pass
+
+    def backspace(self):
+        pass
+
+    def letter(self, c):
         pass
 
     def send_next(self):
