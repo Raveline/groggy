@@ -1,7 +1,8 @@
 from groggy.events import bus
 from groggy.ui.components import (
     StaticText, TextBloc, RowsComponent, DynamicText, RootComponent,
-    Button, Ruler, NumberPicker, Line, ComponentException, ListComponent
+    Button, Ruler, NumberPicker, Line, ComponentException, ListComponent,
+    CheckboxComponent
 )
 
 
@@ -86,6 +87,14 @@ def build_list(component_description, x, y, w, h, selectable):
     if selectable is None:
         selectable = True
     return ListComponent(x, y, w, h, source, selectable)
+
+
+def build_checkbox(component_description, x, y, w, h, selectable):
+    checked = component_description.get('checked', False)
+    label = component_description.get('label')
+    if selectable is None:
+        selectable = True
+    return CheckboxComponent(x, y, w, label, selectable, checked)
 
 
 def build_component(context, comp_desc, children=None, root=False):
@@ -244,6 +253,8 @@ def make_choice_box(x, y, w, title, text, from_state, choices_strs,
 
 BUILDERS = {'TextBloc': build_text_bloc,
             'StaticText': build_static_text,
+            'Checkbox': build_checkbox,
+            'List': build_list,
             'RowsComponent': build_rows,
             'Line': build_line,
             'DynamicText': build_dynamic_text,
