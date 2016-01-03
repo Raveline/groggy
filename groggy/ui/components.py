@@ -239,7 +239,7 @@ class RowsComponent(ContainerComponent):
     A series of components built as a line.
     """
     def __init__(self, x, y, w=0, h=0, selectable=False, contents=None):
-        super(RowsComponent).__init__(x, y, w, h, is_selectable)
+        super(RowsComponent).__init__(x, y, w, h, selectable)
         if contents is None:
             contents = []
         self.contents = contents
@@ -311,6 +311,26 @@ class Line(Component):
 
     def display(self, console):
         tcod.console_hline(console, self.x, self.y, self.w)
+
+
+class ListItemComponent(Component):
+    def __init__(self, x, y, w, item):
+        super(ListItemComponent, self).__init__(x, y, w, 1)
+        self.item = item
+        self.activated = False
+
+    def enter(self):
+        self.activated = not self.activated
+
+    def display(self, console):
+        if self.activated:
+            display_highlighted_text(console, self.text, self.x, self.y,
+                                     tcod.green, tcod.white)
+        else:
+            func = display_text
+            if self.focused:
+                func = display_highlighted_text
+            func(console, self.text, self.x, self.y)
 
 
 class MinimumMaximum(Component):
