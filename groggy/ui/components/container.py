@@ -29,9 +29,6 @@ class ContainerComponent(Component):
             self.update_selected_index(-1)
         else:
             self.get_selected().receive(event_data)
-            # We then reset the data setter, so that every
-            # component is updated.
-            self.set_data(self.data)
 
     def update_selected_index(self, by):
         self.get_selected().leave_focus()
@@ -41,7 +38,7 @@ class ContainerComponent(Component):
             self.leave_focus()
             self.send_previous()
         elif self.selected_index >= len(self.selectable_children):
-            self.selected_index = len(self.selected_children) - 1
+            self.selected_index = len(self.selectable_children) - 1
             self.leave_focus()
             self.send_next()
         else:
