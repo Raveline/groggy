@@ -161,7 +161,7 @@ class ListComponent(ContainerComponent):
 
     def display(self, console):
         for child in self.children:
-            child.display(console.console)
+            child.display(console)
 
 
 class CheckboxComponent(Component):
