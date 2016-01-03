@@ -1,7 +1,8 @@
 from groggy.events import bus
 from groggy.ui.components import (
     StaticText, TextBloc, RowsComponent, DynamicText, RootComponent,
-    Button, Ruler, NumberPicker, Line, ComponentException)
+    Button, Ruler, NumberPicker, Line, ComponentException, ListComponent
+)
 
 
 class UnknownComponentException(Exception):
@@ -78,6 +79,13 @@ def build_number_picker(component_description, x, y, w, h, selectable):
         selectable = True
     source = component_description.get('source')
     return NumberPicker(x, y, source, selectable=selectable)
+
+
+def build_list(component_description, x, y, w, h, selectable):
+    source = component_description.get('source')
+    if selectable is None:
+        selectable = True
+    return ListComponent(x, y, w, h, source, selectable)
 
 
 def build_component(context, comp_desc, children=None, root=False):
