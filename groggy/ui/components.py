@@ -377,13 +377,13 @@ class ListItemComponent(Component):
 
     def display(self, console):
         if self.activated:
-            display_highlighted_text(console, self.text, self.x, self.y,
+            display_highlighted_text(console, str(self.item), self.x, self.y,
                                      tcod.green, tcod.white)
         else:
             func = display_text
             if self.focused:
                 func = display_highlighted_text
-            func(console, self.text, self.x, self.y)
+            func(console, str(self.item), self.x, self.y)
 
 
 class MinimumMaximum(Component):
