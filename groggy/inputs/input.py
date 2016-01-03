@@ -33,6 +33,7 @@ class Inputs(object):
     F11 = 66
     F12 = 67
     END = 100
+    BACKSPACE = 99
 
     def __init__(self, bus):
         '''
