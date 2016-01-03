@@ -10,6 +10,10 @@ class UnknownComponentException(Exception):
     pass
 
 
+class InvalidComponentException(Exception):
+    pass
+
+
 class MissingContextException(Exception):
     pass
 
@@ -84,6 +88,10 @@ def build_number_picker(component_description, x, y, w, h, selectable):
 
 def build_list(component_description, x, y, w, h, selectable):
     source = component_description.get('source')
+    if not source:
+        raise InvalidComponentException(
+            'List components should have a source !'
+        )
     if selectable is None:
         selectable = True
     return ListComponent(x, y, w, h, source, selectable)
