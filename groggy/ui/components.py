@@ -133,6 +133,27 @@ class ContainerComponent(Component):
         bus.bus.unsubscribe(self, bus.MENU_ACTION)
 
 
+class ListComponent(ContainerComponent):
+    """
+    A combo box of sort.
+    """
+    def __init__(self, x, y, w, h, source, selectable=True):
+        self.source = source
+        super(ListComponent, self).__init__(x, y, w, h, selectable, None)
+
+    def set_data(self, data):
+        items = read_path_dict(data, self.source)
+        self.children = []
+        for idx, elem in enumerate(items):
+            self.children.append(
+                ListItemComponent(self.x, self.y + idx, self.w, elem)
+            )
+
+    def display(self, console):
+        for child in self.children:
+            child.display(console.console)
+
+
 class RootComponent(ContainerComponent):
     """A component with an attached console."""
     def __init__(self, x, y, w, h, title, children):
