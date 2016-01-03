@@ -167,7 +167,7 @@ class ListComponent(ContainerComponent):
 class CheckboxComponent(Component):
     def __init__(self, x, y, w, label, selectable=True, checked=False):
         super(CheckboxComponent, self).__init__(x, y, w, 1, selectable)
-        self.activated = checked
+        self.checked = checked
         self.label = label
 
     def enter(self):
@@ -178,7 +178,7 @@ class CheckboxComponent(Component):
             num = 10
         else:
             num = 9
-        to_display = chr(num) + ' ' + self.display
+        to_display = chr(num) + ' ' + self.label
         func = display_text
         if self.focused:
             func = display_highlighted_text
