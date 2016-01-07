@@ -191,6 +191,7 @@ class MenuState(GameState):
 
     def activate(self):
         bus.bus.subscribe(self, bus.MENU_MODEL_EVENT)
+        self.root_component.enter_focus()
 
     def deactivate(self):
         bus.bus.unsubscribe(self, bus.MENU_MODEL_EVENT)
