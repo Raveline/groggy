@@ -22,6 +22,11 @@ class ListComponent(ContainerComponent):
             )
         self.set_children(children)
 
+    def set_children(self, children):
+        super(ListComponent, self).set_children(children)
+        if self.focused and len(self.selectable_children):
+            self.selectable_children[0].enter_focus()
+
     def display(self, console):
         for child in self.children:
             child.display(console)
@@ -39,7 +44,7 @@ class ListItemComponent(Component):
     def display(self, console):
         if self.activated:
             display_highlighted_text(console, str(self.item), self.x, self.y,
-                                     tcod.green, tcod.white)
+                                     tcod.green, tcod.black)
         else:
             func = display_text
             if self.focused:
