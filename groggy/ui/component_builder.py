@@ -2,7 +2,7 @@ from groggy.events import bus
 from groggy.ui.components import (
     StaticText, TextBloc, RowsComponent, DynamicText, RootComponent,
     Button, Ruler, NumberPicker, Line, ComponentException, ListComponent,
-    CheckboxComponent
+    CheckboxComponent, TextInput
 )
 
 
@@ -55,6 +55,12 @@ def build_rows(component_description, x, y, w, h, selectable):
 
 def build_line(component_description, x, y, w, h, selectable):
     return Line(x, y, w)
+
+
+def build_text_input(component_description, x, y, w, h, selectable):
+    text = component_description.get('default', None)
+    source = component_description.get('source', None)
+    return TextInput(x, y, w, text, source)
 
 
 def build_dynamic_text(component_description, x, y, w, h, selectable):
@@ -266,6 +272,7 @@ BUILDERS = {'TextBloc': build_text_bloc,
             'RowsComponent': build_rows,
             'Line': build_line,
             'DynamicText': build_dynamic_text,
+            'Input': build_text_input,
             'Ruler': build_ruler,
             'Button': build_button,
             'NumberPicker': build_number_picker}

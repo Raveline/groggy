@@ -1,0 +1,30 @@
+from groggy.utils.dict_path import read_path_dict
+from groggy.ui.components.component import Component
+from groggy.view.show_console import display_text, display_highlighted_text
+
+
+class TextInput(Component):
+    """
+    A never selectable rectangle of text, used to display long
+    information to the player.
+    """
+    def __init__(self, x, y, w, text='', source=None):
+        super(TextInput, self).__init__(x, y, w)
+        self.text = text
+        self.source = source
+
+    def set_data(self, data):
+        if self.source:
+            self.text = str(read_path_dict(data, self.source))
+
+    def letter(self, c):
+        self.text = self.text + c
+
+    def backspace(self):
+        self.text = self.text[:-1]
+
+    def display(self, console):
+        func = display_text
+        if self.focused:
+            func = display_highlighted_text
+        func(console, self.text, self.x, self.y)
