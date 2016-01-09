@@ -39,6 +39,8 @@ class Component(object):
             self.enter()
         elif event_data == Inputs.BACKSPACE:
             self.backspace()
+        elif event_data == Inputs.SPACE:
+            self.letter(' ')
         elif ord(event_data) >= 63 and ord(event_data) <= 122:
             self.letter(event_data)
 
