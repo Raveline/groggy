@@ -13,9 +13,9 @@ class CheckboxComponent(Component):
 
     def display(self, console):
         if self.checked:
-            num = 10
+            num = 225
         else:
-            num = 9
+            num = 224
         to_display = chr(num) + ' ' + self.label
         func = display_text
         if self.focused:
