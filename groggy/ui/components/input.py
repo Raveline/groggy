@@ -8,8 +8,8 @@ class TextInput(Component):
     A never selectable rectangle of text, used to display long
     information to the player.
     """
-    def __init__(self, x, y, w, text='', source=None):
-        super(TextInput, self).__init__(x, y, w)
+    def __init__(self, x, y, w, text='', source=None, selectable=True):
+        super(TextInput, self).__init__(x, y, w, 1, selectable)
         self.text = text
         self.source = source
 
