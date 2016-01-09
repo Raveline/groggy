@@ -58,7 +58,7 @@ def build_line(component_description, x, y, w, h, selectable):
 
 
 def build_text_input(component_description, x, y, w, h, selectable):
-    text = component_description.get('default', None)
+    text = component_description.get('default', '')
     source = component_description.get('source', None)
     return TextInput(x, y, w, text, source)
 
