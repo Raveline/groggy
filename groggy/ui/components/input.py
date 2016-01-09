@@ -25,6 +25,11 @@ class TextInput(Component):
 
     def display(self, console):
         func = display_text
+        to_display = self.text
         if self.focused:
             func = display_highlighted_text
-        func(console, self.text, self.x, self.y)
+            # If text is empty, we'll replace by a highlited blank space
+            # so focus is visible
+            if not self.text:
+                to_display = ' '
+        func(console, to_display, self.x, self.y)
