@@ -174,6 +174,32 @@ class ScapeState(GameState):
 
 
 class MenuState(GameState):
+    '''
+    A menu is a temporary state used by the player to make some choices,
+    feed some data to the game or access them.
+
+    Menu has its own console, and uses Components. Components are able to
+    read data from a dictionary of data and, when they are updated, they
+    will send a MENU_MODEL_EVENT to indicate there is a new value.
+
+    Components are typically build using the module component_builder, so
+    that component can be defined through a simple dictionary.
+
+    To build the menu logic, you inherit this class, and implement your
+    own receiver. The steps are as follow:
+
+    - The model is always a dictionary (be careful, this means lots of
+      bug will come from this dynamic but two-edged tool...).
+
+    - Setting data for the components means that every component will
+      translate the dict to its own display. A checkbox will look for
+      a boolean value, an input box for a text, and so on.
+
+    - When a component is updated by the player input, it will end up
+      in the receive method of the MenuState. From this, the state can
+      validate the input, take action, and finally reset the data if needed,
+      to update the whole view.
+    '''
     def __init__(self, state_tree, root_component, parent_state=None,
                  data=None):
         super(MenuState, self).__init__(state_tree, MENU_STATE, parent_state)
