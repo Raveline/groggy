@@ -19,9 +19,11 @@ class TextInput(Component):
 
     def letter(self, c):
         self.text = self.text + c
+        self.publish_change(self.text)
 
     def backspace(self):
         self.text = self.text[:-1]
+        self.publish_change(self.text)
 
     def display(self, console):
         func = display_text

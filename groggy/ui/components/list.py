@@ -1,4 +1,5 @@
 import libtcodpy as tcod
+
 from groggy.utils.dict_path import read_path_dict
 from groggy.ui.components.component import Component
 from groggy.ui.components.container import ContainerComponent
@@ -8,6 +9,8 @@ from groggy.view.show_console import display_highlighted_text, display_text
 class ListComponent(ContainerComponent):
     """
     A combo box of sort.
+    Components should be able to read in a data dictionary a
+    list of dicts containing "object" and "selected".
     """
     def __init__(self, x, y, w, h, source, selectable=True):
         self.source = source
@@ -18,7 +21,8 @@ class ListComponent(ContainerComponent):
         children = []
         for idx, elem in enumerate(items):
             children.append(
-                ListItemComponent(self.x, self.y + idx, self.w, elem)
+                ListItemComponent(self.x, self.y + idx, self.w, self.source,
+                                  elem)
             )
         self.set_children(children)
 
@@ -33,20 +37,27 @@ class ListComponent(ContainerComponent):
 
 
 class ListItemComponent(Component):
-    def __init__(self, x, y, w, item):
+    def __init__(self, x, y, w, source, item):
         super(ListItemComponent, self).__init__(x, y, w, 1, True)
+        self.source = source
         self.item = item
-        self.activated = False
+        self.displayed_text = str(self.item['object'])
+        self.selected = self.item['selected']
+
+    def is_activated(self):
+        return self.item['selected']
 
     def enter(self):
-        self.activated = not self.activated
+        self.item['selected'] = not self.is_activated
+        self.selected = False
+        self.publish_change(self.item['object'])
 
     def display(self, console):
-        if self.activated:
-            display_highlighted_text(console, str(self.item), self.x, self.y,
-                                     tcod.green, tcod.black)
+        if self.is_activated():
+            display_highlighted_text(console, self.displayed_text,
+                                     self.x, self.y, tcod.green, tcod.black)
         else:
             func = display_text
             if self.focused:
                 func = display_highlighted_text
-            func(console, str(self.item), self.x, self.y)
+            func(console, self.displayed_text, self.x, self.y)

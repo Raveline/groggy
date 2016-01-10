@@ -1,7 +1,6 @@
 from __future__ import division
 import math
 import libtcodpy as tcod
-from groggy.events import bus
 from groggy.utils.dict_path import read_path_dict
 from groggy.ui.components.component import Component, ComponentException
 from groggy.view.show_console import (
@@ -11,7 +10,10 @@ from groggy.view.show_console import (
 
 class MinimumMaximum(Component):
     """Abstract class for component with a current / minimum / maximum
-    data model."""
+    data model.
+    Components should be able to read in a data dictionary a structure
+    containing "minimum", "maximum" and "current".
+    """
     def set_data(self, data):
         pertinent = read_path_dict(data, self.source)
         if pertinent:
@@ -22,22 +24,17 @@ class MinimumMaximum(Component):
             raise ComponentException('Data %s has no source key : %s.'
                                      % (str(data), self.source))
 
-    def publish_change(self):
-        bus.bus.publish({'source': self.source,
-                         'new_value': self.value},
-                        bus.MENU_MODEL_EVENT)
-
     def left(self, unit=1):
         self.value -= unit
         if self.value < self.minimum:
             self.value = self.minimum
-        self.publish_change()
+        self.publish_change(self.value)
 
     def right(self, unit=1):
         self.value += unit
         if self.value > self.maximum:
             self.value = self.maximum
-        self.publish_change()
+        self.publish_change(self.value)
 
 
 class NumberPicker(MinimumMaximum):

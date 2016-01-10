@@ -23,6 +23,11 @@ class Component(object):
         self.is_selectable = is_selectable
         self.focused = False
 
+    def publish_change(self, new_value):
+        bus.bus.publish({'source': self.source,
+                         'new_value': new_value},
+                        bus.MENU_MODEL_EVENT)
+
     def set_data(self, data):
         pass
 
