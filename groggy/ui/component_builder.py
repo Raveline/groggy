@@ -106,11 +106,11 @@ def build_list(component_description, x, y, w, h, selectable):
 
 
 def build_checkbox(component_description, x, y, w, h, selectable):
-    checked = component_description.get('checked', False)
     label = component_description.get('label')
+    source = component_description.get('source')
     if selectable is None:
         selectable = True
-    return CheckboxComponent(x, y, w, label, selectable, checked)
+    return CheckboxComponent(x, y, w, label, source, selectable)
 
 
 def build_component(context, comp_desc, children=None, root=False):
