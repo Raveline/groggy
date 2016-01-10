@@ -95,6 +95,9 @@ class GameState(object):
         """Actions to take when state should be destroyed."""
         pass
 
+    def call_previous_state(self):
+        bus.bus.publish(self.parent_state, bus.PREVIOUS_STATE)
+
 
 class ScapeState(GameState):
     def __init__(self, state_tree, parent_state=None, scape=None):
@@ -139,7 +142,7 @@ class ScapeState(GameState):
             - There is a parent state
         """
         if not self.scape.selection and self.parent_state is not None:
-            bus.bus.publish(self.parent_state, bus.PREVIOUS_STATE)
+            self.call_previous_state()
             self.scape.set_char()
             return True
         elif self.scape.selection:
