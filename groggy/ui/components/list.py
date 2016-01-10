@@ -48,14 +48,20 @@ class ListItemComponent(Component):
         return self.item['selected']
 
     def enter(self):
-        self.item['selected'] = not self.is_activated
-        self.selected = False
-        self.publish_change(self.item['object'])
+        self.item['selected'] = not self.is_activated()
+        self.selected = not self.selected
+        # No need to update here : we're directly manipulating the object
 
     def display(self, console):
         if self.is_activated():
+            if self.focused:
+                fb = tcod.green
+                bg = tcod.yellow
+            else:
+                fb = tcod.black
+                bg = tcod.green
             display_highlighted_text(console, self.displayed_text,
-                                     self.x, self.y, tcod.green, tcod.black)
+                                     self.x, self.y, bg, fb)
         else:
             func = display_text
             if self.focused:
