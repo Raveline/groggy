@@ -23,4 +23,8 @@ def read_path_dict(dic, key):
             'Key is incorrect : %s. Started with %s to be found in %s'
             % (key_elements, key, dic)
         )
-    return current[key_elements[-1]]
+    try:
+        return current[key_elements[-1]]
+    except KeyError:
+        raise InvalidPathException('Could not find key %s in %s. Dict was : %s'
+                                   % (key_elements[-1], current, dic))
