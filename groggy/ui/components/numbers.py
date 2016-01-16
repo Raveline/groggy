@@ -20,18 +20,19 @@ class MinimumMaximum(Component):
             self.minimum = pertinent.get('minimum')
             self.maximum = pertinent.get('maximum')
             self.value = pertinent.get('current')
+            self.step = pertinent.get('step')
         else:
             raise ComponentException('Data %s has no source key : %s.'
                                      % (str(data), self.source))
 
     def left(self, unit=1):
-        self.value -= unit
+        self.value -= self.step * unit
         if self.value < self.minimum:
             self.value = self.minimum
         self.publish_change(self.value)
 
     def right(self, unit=1):
-        self.value += unit
+        self.value += self.step * unit
         if self.value > self.maximum:
             self.value = self.maximum
         self.publish_change(self.value)
