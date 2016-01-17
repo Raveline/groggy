@@ -20,7 +20,7 @@ class MinimumMaximum(Component):
             self.minimum = pertinent.get('minimum')
             self.maximum = pertinent.get('maximum')
             self.value = pertinent.get('current')
-            self.step = pertinent.get('step')
+            self.step = pertinent.get('step', 1)
         else:
             raise ComponentException('Data %s has no source key : %s.'
                                      % (str(data), self.source))
