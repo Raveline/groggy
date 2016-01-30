@@ -99,17 +99,32 @@ class GameState(object):
         bus.bus.publish(self.parent_state, bus.PREVIOUS_STATE)
 
 
-class ScapeState(GameState):
-    def __init__(self, state_tree, parent_state=None, scape=None):
-        super(ScapeState, self).__init__(state_tree, NAVIGATING_STATE,
-                                         parent_state)
-        self.scape = scape
-        """Sub actions can have a complement, the sub_object."""
+class ViewportState(GameState):
+    """
+    This is a state that allow, amongst other features, manipulating
+    a viewport. In other words, any state of the game where a part of
+    the world is displayed and must scroll.
+    """
+    def __init__(self, state_tree, parent_state=None, viewport=None,
+                 selection=None):
+        super(ViewportState, self).__init__(state_tree, NAVIGATING_STATE,
+                                            parent_state)
+        self.viewport = viewport
+        """The part of the world that is displayed."""
+        self.selection = selection
+        """The way "area" interaction with the world are represented.
+        The selection will typically receive movement input.
+        It might be the canonical '@', a crosshair, etc."""
+
+    def handle_selection_move(self, event_data):
+        self.selection.receive(event_data, self.viewport)
 
     def dispatch_input_event(self, event_data):
         """React to a simple input. Very often, it will mean
-        passing the input to the scape."""
-        pass
+        passing the input to the scape, so this is the default
+        behaviour, but you absolutely should override this if
+        the player can do other things than moving."""
+        self.handle_selection_move(event_data)
 
     def dispatch_selection_event(self, event_data):
         """React to a "confirmation" event."""
@@ -141,11 +156,11 @@ class ScapeState(GameState):
             - There is no current selection in the scape
             - There is a parent state
         """
-        if not self.scape.selection and self.parent_state is not None:
+        if not self.selection and self.parent_state is not None:
             self.call_previous_state()
-            self.scape.set_char()
+            self.selection.set_char()
             return True
-        elif self.scape.selection:
+        elif self.selection:
             self.scape.set_char()
             self.sub_object = None
         return False
