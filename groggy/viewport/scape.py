@@ -49,8 +49,8 @@ class Scape(object):
         """
         Compute the center of the scape.
         """
-        self.focusX = self.frame.w / 2
-        self.focusY = self.frame.h / 2
+        self.focusX = self.frame.w // 2
+        self.focusY = self.frame.h // 2
 
     def receive(self, message):
         """
@@ -200,8 +200,8 @@ class Crosshair(Scape):
         self.crosshair = (selector.getX(), selector.getY(), selector.getZ())
 
     def compute_maximum(self):
-        self.maxX = self.world_frame.w - (self.scape.frame.w / 2)
-        self.maxY = self.world_frame.h - (self.scape.frame.h / 2)
+        self.maxX = self.world_frame.w - (self.scape.frame.w // 2)
+        self.maxY = self.world_frame.h - (self.scape.frame.h // 2)
 
     def receive(self, message):
         super(Crosshair, self).receive(message)
