@@ -80,7 +80,6 @@ class GameState(object):
         if substate:
             bus.bus.publish(substate,
                             bus.NEW_STATE)
-            self.scape.set_char()
         return substate
 
     def activate(self):
@@ -161,7 +160,7 @@ class ViewportState(GameState):
             self.selection.set_char()
             return True
         elif self.selection:
-            self.scape.set_char()
+            self.selection.set_char()
             self.sub_object = None
         return False
 
