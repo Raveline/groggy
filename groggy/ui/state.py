@@ -155,11 +155,11 @@ class ViewportState(GameState):
             - There is no current selection in the scape
             - There is a parent state
         """
-        if not self.selection and self.parent_state is not None:
+        if not self.selection.selected_area and self.parent_state is not None:
             self.call_previous_state()
             self.selection.set_char()
             return True
-        elif self.selection:
+        elif self.selection.selected_area:
             self.selection.set_char()
             self.sub_object = None
         return False

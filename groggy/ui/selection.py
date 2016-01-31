@@ -11,7 +11,7 @@ class Focus(object):
     interacting with the world.
     Note that Foci can be of various types, some being a single character,
     others being numerous, blinking characters (typically, when trying
-    to designate an area on a map).
+    to designate an selected_area on a map).
     This class should be extended to fit your need, or you can use some
     of the extension given in this module, like Crosshair or Filler.
     """
@@ -36,9 +36,9 @@ class Focus(object):
         Set the characters to display if there are numerous characters
         to be shown. (Only works with rectangular forms).
         """
-        self.selection = Selection(self.getX(), self.getY(), self.getZ())
-        self.selection.x2 = self.selection.x + width - 1
-        self.selection.y2 = self.selection.y + height - 1
+        self.selected_area = Selection(self.getX(), self.getY(), self.getZ())
+        self.selected_area.x2 = self.selected_area.x + width - 1
+        self.selected_area.y2 = self.selected_area.y + height - 1
         self.character = list(chain(*characters))
         self.block = True
 
@@ -59,16 +59,16 @@ class Focus(object):
             movx = 1
         # Handling selection
         if message == Inputs.ENTER:
-            if self.selection:
-                selection = self.selection
+            if self.selected_area:
+                selected_area = self.selected_area
                 self.finish_select()
-                bus.bus.publish(selection, bus.AREA_SELECT)
+                bus.bus.publish(selected_area, bus.AREA_SELECT)
             else:
                 self.enter_select()
         if message == Inputs.ESCAPE:
             self.finish_select()
         if movx != 0 or movy != 0:
-            if self.selection:
+            if self.selected_area:
                 self.move_select()
             else:
                 self.move(movx, movy)
@@ -78,16 +78,16 @@ class Focus(object):
         pass
 
     def enter_select(self):
-        self.selection = Selection(self.getX(), self.getY(), self.getZ())
+        self.selected_area = Selection(self.getX(), self.getY(), self.getZ())
 
     def move_select(self):
         if self.block:
-            self.selection.translate_to(self.getX(), self.getY())
+            self.selected_area.translate_to(self.getX(), self.getY())
         else:
-            self.selection.extends_to(self.getX(), self.getY())
+            self.selected_area.extends_to(self.getX(), self.getY())
 
     def finish_select(self):
-        self.selection = None
+        self.selected_area = None
 
     def set_coords(self, selector):
         pass
@@ -98,7 +98,7 @@ class Focus(object):
 
 class Selection(Frame):
     """
-    A representation of an area selected in the world.
+    A representation of an selected_area selected in the world.
     """
     def __init__(self, x, y, z):
         self.initial_x = x
@@ -155,10 +155,10 @@ class Crosshair(Focus):
         super(Crosshair, self).__init__()
         # (int, int, int) for (x, y, z)
         self.crosshair = (0, 0, 0)
-        self.selection = None
+        self.selected_area = None
 
     def set_coords(self, selector):
-        self.selection = None
+        self.selected_area = None
         self.crosshair = (selector.getX(), selector.getY(), selector.getZ())
 
     def getX(self):
@@ -174,14 +174,14 @@ class Crosshair(Focus):
         self.crosshair = (self.getX() + dx, self.getY() + dy, self.getZ())
 
     def rect_to_local(self):
-        return (self.selection.x - self.scape.frame.x,
-                self.selection.y - self.scape.frame.y,
-                self.selection.x2 - self.scape.frame.x,
-                self.selection.y2 - self.scape.frame.y)
+        return (self.selected_area.x - self.scape.frame.x,
+                self.selected_area.y - self.scape.frame.y,
+                self.selected_area.x2 - self.scape.frame.x,
+                self.selected_area.y2 - self.scape.frame.y)
 
     def get_selected_tiles(self):
-        if self.selection:
-            return self.selection.to_list_of_tiles()
+        if self.selected_area:
+            return self.selected_area.to_list_of_tiles()
         else:
             return [(self.getX(), self.getY(), self.getZ())]
 
@@ -193,24 +193,26 @@ class Fillhair(Crosshair):
     """
     def __init__(self, func_filler):
         super(Fillhair, self).__init__()
-        self.selection = []
+        self.selected_area = []
         self.func_filler = func_filler
 
     def rect_to_local(self):
-        return (self.selection.x - self.scape.frame.x,
-                self.selection.y - self.scape.frame.y,
-                self.selection.x2 - self.scape.frame.x,
-                self.selection.y2 - self.scape.frame.y)
+        return (self.selected_area.x - self.scape.frame.x,
+                self.selected_area.y - self.scape.frame.y,
+                self.selected_area.x2 - self.scape.frame.x,
+                self.selected_area.y2 - self.scape.frame.y)
 
     def set_selected(self):
-        self.selection = self.func_filler((self.getX(), self.getY(), self.getZ()))
+        self.selected_area = self.func_filler(
+            (self.getX(), self.getY(), self.getZ())
+        )
 
     def enter_select(self):
         self.set_selected()
 
     def get_selected_tiles(self):
-        if self.selection:
-            return self.selection
+        if self.selected_area:
+            return self.selected_area
         else:
             return super(Fillhair, self).get_selected_tiles()
 
@@ -218,4 +220,4 @@ class Fillhair(Crosshair):
         pass
 
     def finish_select(self):
-        self.selection = []
+        self.selected_area = []
