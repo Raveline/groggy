@@ -12,6 +12,8 @@ class Focus(object):
     Note that Foci can be of various types, some being a single character,
     others being numerous, blinking characters (typically, when trying
     to designate an area on a map).
+    This class should be extended to fit your need, or you can use some
+    of the extension given in this module, like Crosshair or Filler.
     """
     def __init__(self):
         self.block = False
