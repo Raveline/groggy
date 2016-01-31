@@ -66,9 +66,14 @@ class Focus(object):
         if message == Inputs.ESCAPE:
             self.finish_select()
         if movx != 0 or movy != 0:
-            viewport.center_move(self)
             if self.selection:
                 self.move_select()
+            else:
+                self.move(movx, movy)
+            viewport.center_move(self)
+
+    def move(self, dx, dy):
+        pass
 
     def enter_select(self):
         self.selection = Selection(self.getX(), self.getY(), self.getZ())
@@ -163,10 +168,8 @@ class Crosshair(Focus):
     def getZ(self):
         return self.crosshair[2]
 
-    def change_frame(self, x, y):
-        super(Crosshair, self).change_frame(x, y)
-        self.crosshair = (self.getX() + x, self.getY() + y, self.getZ())
-        self.scape.change_focus(self)
+    def move(self, dx, dy):
+        self.crosshair = (self.getX() + dx, self.getY() + dy, self.getZ())
 
     def rect_to_local(self):
         return (self.selection.x - self.scape.frame.x,
