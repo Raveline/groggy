@@ -50,8 +50,8 @@ class Viewport(object):
         centerx = focus.getX()
         centery = focus.getY()
         # Below these X and Y, move to the left and to the top
-        minx = self.frame.x + self.focusX
-        miny = self.frame.y + self.focusY
+        minx = self.frame.x + self.centerX
+        miny = self.frame.y + self.centerY
         # Above these X and Y, move to the right and to the bottom
         maxx = minx
         maxy = miny
@@ -67,8 +67,7 @@ class Viewport(object):
 
     def to_local(self):
         """
-        Given a x and a y on the viewport, give their coordinates
-        in the world frame.
+        ???
         """
         return self.global_to_local(self.getX(), self.getY())
 
@@ -77,4 +76,4 @@ class Viewport(object):
         Given a x and y on the world frame, give their coordinates
         in the viewport frame.
         """
-        return x - self.scape.frame.x, y - self.scape.frame.y
+        return x - self.frame.x, y - self.frame.y
