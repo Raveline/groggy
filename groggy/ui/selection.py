@@ -68,10 +68,9 @@ class Focus(object):
         if message == Inputs.ESCAPE:
             self.finish_select()
         if movx != 0 or movy != 0:
+            self.move(movx, movy)
             if self.selected_area:
                 self.move_select()
-            else:
-                self.move(movx, movy)
             viewport.center_move(self)
 
     def move(self, dx, dy):
