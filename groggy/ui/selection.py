@@ -69,12 +69,19 @@ class Focus(object):
             self.finish_select()
         if movx != 0 or movy != 0:
             self.move(movx, movy)
+            self.clip_move(viewport.world_frame)
             if self.selected_area:
                 self.move_select()
             viewport.center_move(self)
 
     def move(self, dx, dy):
         pass
+
+    def clip_move(self, frame):
+        """
+        Make sure the selection do not go out of the frame.
+        """
+        raise NotImplementedError
 
     def enter_select(self):
         self.selected_area = Selection(self.getX(), self.getY(), self.getZ())
@@ -171,6 +178,19 @@ class Crosshair(Focus):
 
     def move(self, dx, dy):
         self.crosshair = (self.getX() + dx, self.getY() + dy, self.getZ())
+
+    def clip_move(self, frame):
+        newx = self.crosshair[0]
+        newy = self.crosshair[1]
+        if self.getX() < 0:
+            newx = 0
+        elif self.getX() > frame.w - 1:
+            newx = frame.w - 1
+        if self.getY() < 0:
+            newy = 0
+        elif self.getY() > frame.h - 1:
+            newy = frame.w - 1
+        self.crosshair = (newx, newy, self.getZ())
 
     def rect_to_local(self):
         return (self.selected_area.x - self.scape.frame.x,
