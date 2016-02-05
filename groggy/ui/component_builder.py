@@ -159,6 +159,9 @@ def build_foreach(component_description, x, y, w, h, context):
             source_builder = to_do.get('source_builder')
             if source_builder:
                 to_do['source'] = '.'.join([str(elem), source_builder])
+            source_getter = to_do.get('source_getter')
+            if source_getter:
+                to_do['content'] = elem.get(source_getter)
             else:
                 to_do['source'] = str(elem)
                 if to_do.get('type') == 'StaticText':
