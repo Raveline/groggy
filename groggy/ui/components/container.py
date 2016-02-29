@@ -15,13 +15,14 @@ class ContainerComponent(Component):
         self.children = children
         self.selectable_children = [c for c in self.children
                                     if c.is_selectable]
+        self.has_selectable = bool(self.selectable_children)
 
     def get_selected(self):
-        return self.selectable_children[self.selected_index]
+        if self.has_selectable:
+            return self.selectable_children[self.selected_index]
 
     def receive(self, event_data):
-        number_of_selectables = len(self.selectable_children)
-        if number_of_selectables == 0:
+        if not self.has_selectable:
             return
         if event_data == ComponentEvent.NEXT:
             self.update_selected_index(1)
@@ -50,6 +51,10 @@ class ContainerComponent(Component):
 
     def enter_focus(self):
         bus.bus.subscribe(self, bus.MENU_ACTION)
+        selection = self.get_selected()
+        if selection:
+            selection.enter_focus()
 
     def leave_focus(self):
+        self.get_selected().focused = False
         bus.bus.unsubscribe(self, bus.MENU_ACTION)

@@ -2,7 +2,7 @@ from groggy.events import bus
 from groggy.ui.components import (
     StaticText, TextBloc, RowsComponent, DynamicText, RootComponent,
     Button, Ruler, NumberPicker, Line, ComponentException, ListComponent,
-    CheckboxComponent
+    CheckboxComponent, TextInput
 )
 
 
@@ -57,6 +57,14 @@ def build_line(component_description, x, y, w, h, selectable):
     return Line(x, y, w)
 
 
+def build_text_input(component_description, x, y, w, h, selectable):
+    text = component_description.get('default', '')
+    source = component_description.get('source', None)
+    if selectable is None:
+        selectable = True
+    return TextInput(x, y, w, text, source, selectable)
+
+
 def build_dynamic_text(component_description, x, y, w, h, selectable):
     is_centered = component_description.get('centered', False)
     source = component_description.get('source', None)
@@ -98,11 +106,11 @@ def build_list(component_description, x, y, w, h, selectable):
 
 
 def build_checkbox(component_description, x, y, w, h, selectable):
-    checked = component_description.get('checked', False)
     label = component_description.get('label')
+    source = component_description.get('source')
     if selectable is None:
         selectable = True
-    return CheckboxComponent(x, y, w, label, selectable, checked)
+    return CheckboxComponent(x, y, w, label, source, selectable)
 
 
 def build_component(context, comp_desc, children=None, root=False):
@@ -151,6 +159,9 @@ def build_foreach(component_description, x, y, w, h, context):
             source_builder = to_do.get('source_builder')
             if source_builder:
                 to_do['source'] = '.'.join([str(elem), source_builder])
+            source_getter = to_do.get('source_getter')
+            if source_getter:
+                to_do['content'] = elem.get(source_getter)
             else:
                 to_do['source'] = str(elem)
                 if to_do.get('type') == 'StaticText':
@@ -266,6 +277,7 @@ BUILDERS = {'TextBloc': build_text_bloc,
             'RowsComponent': build_rows,
             'Line': build_line,
             'DynamicText': build_dynamic_text,
+            'Input': build_text_input,
             'Ruler': build_ruler,
             'Button': build_button,
             'NumberPicker': build_number_picker}

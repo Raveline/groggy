@@ -3,19 +3,26 @@ from groggy.view.show_console import display_highlighted_text, display_text
 
 
 class CheckboxComponent(Component):
-    def __init__(self, x, y, w, label, selectable=True, checked=False):
+    """
+    A checkbox. Component should be able to read a simple
+    bool in a data dictionary.
+    """
+    def __init__(self, x, y, w, label, selectable=True, source=True,
+                 checked=False):
         super(CheckboxComponent, self).__init__(x, y, w, 1, selectable)
+        self.source = source
         self.checked = checked
         self.label = label
 
     def enter(self):
         self.checked = not self.checked
+        self.publish_change(self.checked)
 
     def display(self, console):
         if self.checked:
-            num = 10
+            num = 225
         else:
-            num = 9
+            num = 224
         to_display = chr(num) + ' ' + self.label
         func = display_text
         if self.focused:

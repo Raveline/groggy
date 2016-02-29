@@ -23,6 +23,11 @@ class Component(object):
         self.is_selectable = is_selectable
         self.focused = False
 
+    def publish_change(self, new_value):
+        bus.bus.publish({'source': self.source,
+                         'new_value': new_value},
+                        bus.MENU_MODEL_EVENT)
+
     def set_data(self, data):
         pass
 
@@ -39,6 +44,8 @@ class Component(object):
             self.enter()
         elif event_data == Inputs.BACKSPACE:
             self.backspace()
+        elif event_data == Inputs.SPACE:
+            self.letter(' ')
         elif ord(event_data) >= 63 and ord(event_data) <= 122:
             self.letter(event_data)
 

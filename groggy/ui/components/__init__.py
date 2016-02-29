@@ -7,6 +7,7 @@ from groggy.ui.components.root import RootComponent
 from groggy.ui.components.row import RowsComponent, ColumnedLine
 from groggy.ui.components.text import TextBloc, StaticText, DynamicText
 from groggy.ui.components.component import ComponentException
+from groggy.ui.components.input import TextInput
 
 
 __all__ = ['Button',
@@ -22,4 +23,5 @@ __all__ = ['Button',
            'TextBloc',
            'StaticText',
            'ComponentException',
+           'TextInput',
            'DynamicText']

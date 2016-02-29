@@ -10,7 +10,6 @@ class RootComponent(ContainerComponent):
         super(RootComponent, self).__init__(x, y, w, h, False, children)
         self.console = Console(x, y, w, h)
         self.title = title
-        bus.bus.subscribe(self, bus.MENU_ACTION)
 
     def deactivate(self):
         bus.bus.unsubscribe(self, bus.MENU_ACTION)

@@ -80,7 +80,6 @@ class GameState(object):
         if substate:
             bus.bus.publish(substate,
                             bus.NEW_STATE)
-            self.scape.set_char()
         return substate
 
     def activate(self):
@@ -95,18 +94,36 @@ class GameState(object):
         """Actions to take when state should be destroyed."""
         pass
 
+    def call_previous_state(self):
+        bus.bus.publish(self.parent_state, bus.PREVIOUS_STATE)
 
-class ScapeState(GameState):
-    def __init__(self, state_tree, parent_state=None, scape=None):
-        super(ScapeState, self).__init__(state_tree, NAVIGATING_STATE,
-                                         parent_state)
-        self.scape = scape
-        """Sub actions can have a complement, the sub_object."""
+
+class ViewportState(GameState):
+    """
+    This is a state that allow, amongst other features, manipulating
+    a viewport. In other words, any state of the game where a part of
+    the world is displayed and must scroll.
+    """
+    def __init__(self, state_tree, parent_state=None, viewport=None,
+                 selection=None):
+        super(ViewportState, self).__init__(state_tree, NAVIGATING_STATE,
+                                            parent_state)
+        self.viewport = viewport
+        """The part of the world that is displayed."""
+        self.selection = selection
+        """The way "area" interaction with the world are represented.
+        The selection will typically receive movement input.
+        It might be the canonical '@', a crosshair, etc."""
+
+    def handle_selection_move(self, event_data):
+        self.selection.receive(event_data, self.viewport)
 
     def dispatch_input_event(self, event_data):
         """React to a simple input. Very often, it will mean
-        passing the input to the scape."""
-        pass
+        passing the input to the scape, so this is the default
+        behaviour, but you absolutely should override this if
+        the player can do other things than moving."""
+        self.handle_selection_move(event_data)
 
     def dispatch_selection_event(self, event_data):
         """React to a "confirmation" event."""
@@ -138,12 +155,12 @@ class ScapeState(GameState):
             - There is no current selection in the scape
             - There is a parent state
         """
-        if not self.scape.selection and self.parent_state is not None:
-            bus.bus.publish(self.parent_state, bus.PREVIOUS_STATE)
-            self.scape.set_char()
+        if not self.selection.selected_area and self.parent_state is not None:
+            self.call_previous_state()
+            self.selection.set_char()
             return True
-        elif self.scape.selection:
-            self.scape.set_char()
+        elif self.selection.selected_area:
+            self.selection.set_char()
             self.sub_object = None
         return False
 
@@ -174,6 +191,32 @@ class ScapeState(GameState):
 
 
 class MenuState(GameState):
+    '''
+    A menu is a temporary state used by the player to make some choices,
+    feed some data to the game or access them.
+
+    Menu has its own console, and uses Components. Components are able to
+    read data from a dictionary of data and, when they are updated, they
+    will send a MENU_MODEL_EVENT to indicate there is a new value.
+
+    Components are typically build using the module component_builder, so
+    that component can be defined through a simple dictionary.
+
+    To build the menu logic, you inherit this class, and implement your
+    own receiver. The steps are as follow:
+
+    - The model is always a dictionary (be careful, this means lots of
+      bug will come from this dynamic but two-edged tool...).
+
+    - Setting data for the components means that every component will
+      translate the dict to its own display. A checkbox will look for
+      a boolean value, an input box for a text, and so on.
+
+    - When a component is updated by the player input, it will end up
+      in the receive method of the MenuState. From this, the state can
+      validate the input, take action, and finally reset the data if needed,
+      to update the whole view.
+    '''
     def __init__(self, state_tree, root_component, parent_state=None,
                  data=None):
         super(MenuState, self).__init__(state_tree, MENU_STATE, parent_state)
@@ -191,6 +234,7 @@ class MenuState(GameState):
 
     def activate(self):
         bus.bus.subscribe(self, bus.MENU_MODEL_EVENT)
+        self.root_component.enter_focus()
 
     def deactivate(self):
         bus.bus.unsubscribe(self, bus.MENU_MODEL_EVENT)
