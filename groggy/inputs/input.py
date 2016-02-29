@@ -43,6 +43,9 @@ class Inputs(object):
         self.mouse = tcod.Mouse()
         self.mouse_x = None
         self.mouse_y = None
+        self.mouse_moved = False
+        self.lclick = False
+        self.rclick = False
         self.key = tcod.Key()
         self.quit = False
         self.bus = bus
@@ -86,6 +89,16 @@ class Inputs(object):
         if self.mouse.y != self.mouse_y:
             self.mouse_y = self.mouse.y
             self.mouse_moved = True
+        if self.mouse.lbutton and not self.lclick:
+            self.lclick = True
+            print('Left clik !')
+        elif not self.mouse.lbutton and self.lclick:
+            self.lclick = False
+            print('No left click anymoare')
+        if self.mouse.rbutton_pressed and not self.rclick:
+            self.rclick = True
+        elif not self.mouse.rbutton_pressed and self.rclick:
+            self.lclick = False
 
 
 # Mapping between libtcod and our own constants.
