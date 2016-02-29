@@ -41,6 +41,8 @@ class Inputs(object):
         so we can write inside.
         '''
         self.mouse = tcod.Mouse()
+        self.mouse_x = None
+        self.mouse_y = None
         self.key = tcod.Key()
         self.quit = False
         self.bus = bus
@@ -77,7 +79,13 @@ class Inputs(object):
         '''
         Currently not implemented.
         '''
-        pass
+        self.mouse_moved = False
+        if self.mouse.x != self.mouse_x:
+            self.mouse_x = self.mouse.x
+            self.mouse_moved = True
+        if self.mouse.y != self.mouse_y:
+            self.mouse_y = self.mouse.y
+            self.mouse_moved = True
 
 
 # Mapping between libtcod and our own constants.
