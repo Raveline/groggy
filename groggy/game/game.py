@@ -1,6 +1,15 @@
+import logging
+from logging.config import dictConfig
+
 import libtcodpy as tcod
+
 import groggy.events.bus as bus
+from groggy.logging import LOG_CONFIG
 from groggy.inputs.input import Inputs
+
+
+dictConfig(LOG_CONFIG)
+logger = logging.getLogger(__name__)
 
 
 class StateSwitchingException(Exception):
@@ -10,15 +19,35 @@ class StateSwitchingException(Exception):
 class Game(object):
     """
     An abstraction to represent the whole game process.
+
+    A Game should have:
+
+    - Consoles, to display stuff.
+
+    - A "world", or game model.
+
+    - A "displayer" utility tool tasked with printing
+      the consoles.
+
+    - A state stack (see state doc for more about this)
+
+    - The inputs manager (typically handled by Groggy itself).
     """
     def __init__(self, title, width, height, fps=60):
         self.width = width
+        """Width of the main window"""
         self.height = height
+        """Height of the main window"""
 
         tcod.console_init_root(self.width, self.height, title)
         self.consoles = self.initialize_consoles()
+        """Consoles registered"""
+        logger.info('Initialized %d consoles.' % len(self.consoles))
         self.initialize_world()
+        logger.info('Initialized world')
         self.displayer = self.initialize_displayer()
+        """Display utility"""
+        logger.info('Displayer initialized')
 
         self.inputs = Inputs(bus.bus)
         bus.bus.subscribe(self, bus.GAME_EVENT)
@@ -33,6 +62,7 @@ class Game(object):
 
         self.continue_game = True
         self.setup_first_state()
+        logger.info('First state initialized, really to run')
 
         self.fps = fps
 
@@ -79,6 +109,9 @@ class Game(object):
         pass
 
     def before_loop(self):
+        """
+        Actions to take before entering the loop.
+        """
         pass
 
     def start_loop(self):
@@ -109,6 +142,7 @@ class Game(object):
         self.inputs.poll()
 
     def change_state(self, new_state):
+        logger.info('Leaving old state %s' % self.state)
         if self.state is not None:
             # Remove the old state from input receiving
             bus.bus.unsubscribe(self.state, bus.INPUT_EVENT)
@@ -120,6 +154,7 @@ class Game(object):
             # put on the stack only once, this very time.
             self.state_stack.append(new_state)
         self.state = new_state
+        logger.info('State is now %s' % self.state)
         # Add the new state to input receiving
         bus.bus.subscribe(self.state, bus.INPUT_EVENT)
         bus.bus.subscribe(self.state, bus.AREA_SELECT)
@@ -129,11 +164,13 @@ class Game(object):
     def receive(self, event):
         event_data = event.get('data')
         if event.get('type', '') == bus.NEW_STATE:
+            logger.info('Received new state event')
             new_state = self.build_state(event_data)
             if new_state is not None:
                 self.state_stack.append(new_state)
                 self.change_state(new_state)
         elif event.get('type', '') == bus.PREVIOUS_STATE:
+            logger.info('Received previous state event')
             if event_data in self.state_stack:
                 idx = self.state_stack.index(event_data)
                 stale_states = self.state_stack[idx + 1:]
