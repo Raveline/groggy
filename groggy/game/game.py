@@ -12,6 +12,10 @@ dictConfig(LOG_CONFIG)
 logger = logging.getLogger(__name__)
 
 
+STATE_EVENTS = (bus.INPUT_EVENT, bus.AREA_SELECT, bus.LEAVE_EVENT,
+                bus.MOUSE_MOVE_EVENT, bus.MOUSE_CLICK_EVENT)
+
+
 class StateSwitchingException(Exception):
     pass
 
@@ -50,10 +54,8 @@ class Game(object):
         logger.info('Displayer initialized')
 
         self.inputs = Inputs(bus.bus)
-        bus.bus.subscribe(self, bus.GAME_EVENT)
-        bus.bus.subscribe(self, bus.NEW_STATE)
-        bus.bus.subscribe(self, bus.PREVIOUS_STATE)
-        bus.bus.subscribe(self, bus.LEAVE_EVENT)
+        bus.bus.subscribe(self, (bus.GAME_EVENT, bus.NEW_STATE,
+                                 bus.PREVIOUS_STATE, bus.LEAVE_EVENT))
 
         self.state = None
         """The current state"""
@@ -145,9 +147,7 @@ class Game(object):
         logger.info('Leaving old state %s' % self.state)
         if self.state is not None:
             # Remove the old state from input receiving
-            bus.bus.unsubscribe(self.state, bus.INPUT_EVENT)
-            bus.bus.unsubscribe(self.state, bus.AREA_SELECT)
-            bus.bus.unsubscribe(self.state, bus.LEAVE_EVENT)
+            bus.bus.unsubscribe(self.state, STATE_EVENTS)
             self.state.deactivate()
         else:
             # This is the first state ever : it should be
@@ -156,9 +156,7 @@ class Game(object):
         self.state = new_state
         logger.info('State is now %s' % self.state)
         # Add the new state to input receiving
-        bus.bus.subscribe(self.state, bus.INPUT_EVENT)
-        bus.bus.subscribe(self.state, bus.AREA_SELECT)
-        bus.bus.subscribe(self.state, bus.LEAVE_EVENT)
+        bus.bus.subscribe(self.state, STATE_EVENTS)
         self.state.activate()
 
     def receive(self, event):
