@@ -32,6 +32,8 @@ AREA_SELECT = 1         # Area was selected
 PLAYER_ACTION = 2       # Any specific action from the player
 MENU_ACTION = 3         # Event to handle user input in menu
 LEAVE_EVENT = 4         # General idea of leaving typically by pressing Escape.
+MOUSE_MOVE_EVENT = 5    # Mouse moved
+MOUSE_CLICK_EVENT = 6   # Mouse was clicked
 
 # Game state management (10-20)
 NEW_STATE = 10          # Event to push a new game state
@@ -83,12 +85,26 @@ class Bus(object):
         self.type_blacklist = type_blacklist or []
 
     def subscribe(self, receiver, event_type):
+        try:
+            for x in event_type:
+                self.__subscribe(receiver, x)
+        except TypeError:
+            self.__subscribe(receiver, event_type)
+
+    def __subscribe(self, receiver, event_type):
         self.events[event_type].append(receiver)
 
     def unsubscribe(self, receiver, event_type):
         try:
+            for x in event_type:
+                self.__unsubscribe(receiver, x)
+        except TypeError:
+            self.__unsubscribe(receiver, event_type)
+
+    def __unsubscribe(self, receiver, event_type):
+        try:
             self.events.get(event_type).remove(receiver)
-        except Exception:
+        except:
             self.publish("Trying to remove a receiver that was not subscribed")
 
     def publish(self, event, event_type=FEEDBACK_EVENT):
@@ -107,7 +123,6 @@ class Bus(object):
                 method = calframe[1][3]
                 self.logger.debug("Send by %s:%s (module %s)",
                                   method, loc, module)
-
 
         # For MENU EVENT, act in a stacky, LIFO way
         if event_type == MENU_ACTION:
