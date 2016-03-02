@@ -115,8 +115,11 @@ class ViewportState(GameState):
         The selection will typically receive movement input.
         It might be the canonical '@', a crosshair, etc."""
 
-    def handle_selection_move(self, event_data):
-        self.selection.receive(event_data, self.viewport)
+    def handle_selection_move(self, event_data, keys=True):
+        if keys:
+            self.selection.receive_keys(event_data, self.viewport)
+        else:
+            self.selection.receive_mouse(event_data, self.viewport)
 
     def dispatch_input_event(self, event_data):
         """React to a simple input. Very often, it will mean
@@ -134,6 +137,8 @@ class ViewportState(GameState):
         event_type = event.get('type')
         if event_type == bus.LEAVE_EVENT:
             self.check_for_previous_state(event_data)
+        if event_type == bus.MOUSE_MOVE_EVENT:
+            self.handle_selection_move(event_data, False)
         if event_type == bus.INPUT_EVENT:
             self.dispatch_input_event(event_data)
         elif event_type == bus.AREA_SELECT:
