@@ -77,6 +77,10 @@ class Inputs(object):
         else:
             if self.key.c >= 63 and self.key.c <= 122:
                 self.bus.publish(chr(self.key.c), bus_events.INPUT_EVENT)
+            if self.mouse_moved:
+                self.bus.publish({'x': self.mouse_x,
+                                  'y': self.mouse_y},
+                                 bus_events.MOUSE_MOVE_EVENT)
 
     def poll_mouse(self):
         '''
@@ -91,10 +95,8 @@ class Inputs(object):
             self.mouse_moved = True
         if self.mouse.lbutton and not self.lclick:
             self.lclick = True
-            print('Left clik !')
         elif not self.mouse.lbutton and self.lclick:
             self.lclick = False
-            print('No left click anymoare')
         if self.mouse.rbutton_pressed and not self.rclick:
             self.rclick = True
         elif not self.mouse.rbutton_pressed and self.rclick:
