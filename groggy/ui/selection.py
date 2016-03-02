@@ -42,11 +42,18 @@ class Focus(object):
         self.character = list(chain(*characters))
         self.block = True
 
-    def receive(self, message, viewport):
+    def receive_mouse(self, message, viewport):
         """
         Handle movements of the frame depending on input.
         Also, handle selection (or leaving selection).
         """
+        mouse_x = message['x']
+        mouse_y = message['y']
+        rx, ry = viewport.global_to_local(mouse_x, mouse_y)
+        self.set(rx, ry)
+        self.clip_move(viewport.world_frame)
+
+    def receive_keys(self, message, viewport):
         movy = 0
         movx = 0
         if message == Inputs.UP:
@@ -74,8 +81,11 @@ class Focus(object):
                 self.move_select()
             viewport.center_move(self)
 
-    def move(self, dx, dy):
+    def set(self, x, y, z=None):
         pass
+
+    def move(self, dx, dy):
+        self.set(self.getX() + dx, self.getY() + dy)
 
     def clip_move(self, frame):
         """
@@ -176,8 +186,11 @@ class Crosshair(Focus):
     def getZ(self):
         return self.crosshair[2]
 
-    def move(self, dx, dy):
-        self.crosshair = (self.getX() + dx, self.getY() + dy, self.getZ())
+    def set(self, x, y, z=None):
+        if z:
+            self.crosshair = (x, y, z)
+        else:
+            self.crosshair = (x, y, self.getZ())
 
     def clip_move(self, frame):
         newx = self.crosshair[0]
