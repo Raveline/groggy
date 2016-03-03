@@ -53,7 +53,7 @@ class Game(object):
         """Display utility"""
         logger.info('Displayer initialized')
 
-        self.inputs = Inputs(bus.bus)
+        self.inputs = Inputs(bus.bus, 16, 16)
         bus.bus.subscribe(self, (bus.GAME_EVENT, bus.NEW_STATE,
                                  bus.PREVIOUS_STATE, bus.LEAVE_EVENT))
 
