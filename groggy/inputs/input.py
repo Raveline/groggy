@@ -35,12 +35,14 @@ class Inputs(object):
     END = 100
     BACKSPACE = 99
 
-    def __init__(self, bus):
+    def __init__(self, bus, tile_width, tile_height):
         '''
         Building the input reader simply requires to give the event bus
         so we can write inside.
         '''
         self.mouse = tcod.Mouse()
+        self.tile_width = tile_width
+        self.tile_height = tile_height
         self.mouse_x = None
         self.mouse_y = None
         self.mouse_moved = False
@@ -87,11 +89,13 @@ class Inputs(object):
         Currently not implemented.
         '''
         self.mouse_moved = False
-        if self.mouse.x != self.mouse_x:
-            self.mouse_x = self.mouse.x
+        as_tile_x = self.mouse.x // self.tile_width
+        as_tile_y = self.mouse.y // self.tile_height
+        if as_tile_x != self.mouse_x:
+            self.mouse_x = as_tile_x
             self.mouse_moved = True
-        if self.mouse.y != self.mouse_y:
-            self.mouse_y = self.mouse.y
+        if as_tile_y != self.mouse_y:
+            self.mouse_y = as_tile_y
             self.mouse_moved = True
         if self.mouse.lbutton and not self.lclick:
             self.lclick = True
