@@ -14,8 +14,13 @@ class Focus(object):
     to designate an selected_area on a map).
     This class should be extended to fit your need, or you can use some
     of the extension given in this module, like Crosshair or Filler.
+
+    Offset_x and offset_y allow to "correct" the mouse
+    positionning if needed.
     """
-    def __init__(self):
+    def __init__(self, offset_x=0, offset_y=0):
+        self.offset_x = offset_x
+        self.offset_y = offset_y
         self.block = False
         """Document this !"""
         self.set_char()
@@ -49,8 +54,13 @@ class Focus(object):
         """
         mouse_x = message['x']
         mouse_y = message['y']
-        rx, ry = viewport.global_to_local(mouse_x, mouse_y)
-        self.set(rx, ry)
+        # TODO: this should not be constant
+        as_tile_x = mouse_x // 16 - self.offset_x
+        as_tile_y = mouse_y // 16 - self.offset_y
+        new_x = as_tile_x - viewport.getX()
+        new_y = as_tile_y - viewport.getY()
+        x, y = viewport.global_to_local(new_x, new_y)
+        self.set(x, y)
         self.clip_move(viewport.world_frame)
 
     def receive_keys(self, message, viewport):
@@ -167,8 +177,8 @@ class Crosshair(Focus):
     """
     A specific Scape that allows to move a crosshair in the world.
     """
-    def __init__(self):
-        super(Crosshair, self).__init__()
+    def __init__(self, offset_x=0, offset_y=0):
+        super(Crosshair, self).__init__(offset_x, offset_y)
         # (int, int, int) for (x, y, z)
         self.crosshair = (0, 0, 0)
         self.selected_area = None
@@ -223,8 +233,8 @@ class Fillhair(Crosshair):
     A specific Crosshair that allow to show a "filled" location
     in the world.
     """
-    def __init__(self, func_filler):
-        super(Fillhair, self).__init__()
+    def __init__(self, func_filler, offset_x, offset_y):
+        super(Fillhair, self).__init__(offset_x, offset_y)
         self.selected_area = []
         self.func_filler = func_filler
 
