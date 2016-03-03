@@ -52,11 +52,8 @@ class Focus(object):
         Handle movements of the frame depending on input.
         Also, handle selection (or leaving selection).
         """
-        mouse_x = message['x']
-        mouse_y = message['y']
-        # TODO: this should not be constant
-        as_tile_x = mouse_x // 16 - self.offset_x
-        as_tile_y = mouse_y // 16 - self.offset_y
+        as_tile_x = message['x'] - self.offset_x
+        as_tile_y = message['y'] - self.offset_y
         new_x = as_tile_x - viewport.getX()
         new_y = as_tile_y - viewport.getY()
         x, y = viewport.global_to_local(new_x, new_y)
