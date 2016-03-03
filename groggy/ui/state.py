@@ -264,6 +264,15 @@ class MenuState(GameState):
         event_type = event.get('type')
         if event_type == bus.MENU_MODEL_EVENT:
             self.receive_model_event(event_data)
+        elif event_type == bus.MOUSE_MOVE_EVENT:
+            x = event_data.get('x')
+            y = event_data.get('y')
+            for pos, item in self.to_positions().items():
+                if ((x >= pos[0] and x <= pos[2]) and
+                    (y >= pos[1] and y <= pos[3])):
+                    focusable = item
+                    # TODO : use same logic if the component is container
+                    # So probably should be set lower in the logic ?
         elif event_type == bus.LEAVE_EVENT:
             self.check_for_previous_state(event_data)
         else:
@@ -274,3 +283,15 @@ class MenuState(GameState):
 
     def __str__(self):
         return "Menu"
+
+    def to_positions(self):
+        x_offset = self.root_component.x
+        y_offset = self.root_component.y
+        positions = {}
+        for item in self.root_component.children:
+            x = item.x + x_offset
+            y = item.y + y_offset
+            x2 = x + item.w
+            y2 = y + item.h
+            positions[(x, y, x2, y2)] = item
+        return positions
