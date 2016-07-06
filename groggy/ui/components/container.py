@@ -31,6 +31,11 @@ class ContainerComponent(Component):
         else:
             self.get_selected().receive(event_data)
 
+    def update_directly_index(self, set_directly):
+        self.get_selected().leave_focus()
+        self.selected_index = set_directly
+        self.get_selected().enter_focus()
+
     def update_selected_index(self, by):
         self.get_selected().leave_focus()
         self.selected_index += by
@@ -42,8 +47,7 @@ class ContainerComponent(Component):
             self.selected_index = len(self.selectable_children) - 1
             self.leave_focus()
             self.send_next()
-        else:
-            self.get_selected().enter_focus()
+        self.get_selected().enter_focus()
 
     def update(self, values):
         for child in self.children:

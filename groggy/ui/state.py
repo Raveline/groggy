@@ -270,7 +270,8 @@ class MenuState(GameState):
             for pos, item in self.to_positions().items():
                 if ((x >= pos[0] and x <= pos[2]) and
                     (y >= pos[1] and y <= pos[3])):
-                    focusable = item
+                    self.root_component.update_directly_index(
+                        set_directly=self.root_component.children.index(item))
                     # TODO : use same logic if the component is container
                     # So probably should be set lower in the logic ?
         elif event_type == bus.LEAVE_EVENT:
